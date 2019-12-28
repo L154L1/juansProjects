@@ -1,0 +1,28 @@
+package reverse_bits;
+
+public class Solution {
+	
+	// you need treat n as an unsigned value
+    public int reverseBits(int n) {
+    	String bits = Integer.toBinaryString(n);
+    	System.out.println(bits);
+    	
+    	String revbits = new StringBuilder(bits).reverse().toString();
+    	System.out.println(revbits);
+    	if(n<0) revbits = revbits.substring(1);
+    	int ret = -1 * Integer.parseInt(revbits, 2);
+    	
+    	return ret;        
+    }   
+    
+
+	public static void main(String[] args) {
+		Solution s = new Solution();
+		
+		//System.out.println(s.reverseBits(43261596));
+		
+		System.out.println(s.reverseBits(-3));			// https://www.rapidtables.com/convert/number/binary-to-decimal.html
+		
+	}
+
+}

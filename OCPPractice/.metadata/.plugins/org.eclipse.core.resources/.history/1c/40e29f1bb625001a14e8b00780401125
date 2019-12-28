@@ -1,0 +1,12 @@
+//FrogJmp - Count minimal number of jumps from position X to Y.
+
+package lesson3_FrogJmp;
+
+public class Solution {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

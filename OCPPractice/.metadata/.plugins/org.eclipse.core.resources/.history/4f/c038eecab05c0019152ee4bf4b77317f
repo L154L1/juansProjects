@@ -1,0 +1,12 @@
+package p359_memory_consistency_errors;
+
+import java.util.*;
+
+public class Test1 {
+
+	public static void main(String[] args) {
+		private Map<String, Object> foodData = new HashMap<>();
+
+	}
+
+}

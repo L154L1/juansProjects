@@ -1,0 +1,26 @@
+https://leetcode.com/problemset/top-interview-questions/
+juanfu2006 / Turnstone1
+gzfujuan@gmail.com
+
+https://www.programcreek.com/2012/11/top-10-algorithms-for-coding-interview/
+Top 10 Algorithms for Coding Interview
+
+
+https://app.codility.com/programmers/lessons
+Codility practice questions
+
+
+
+=== quick code kit ===
+int i = list.stream().mapToInt(a->a).min().getAsInt();
+
+
+
+
+
+https://www.byte-by-byte.com/studying-data-structures-and-algorithms/
+How to study data structures and algorithms to rock your interview
+
+The key to studying is to maximize the time you have by studying the most high-value topics. That means you shouldn’t study everything. After a certain point, your time would be better spent elsewhere, so focus on core data structures and algorithms.
+
+Study hash tables and linked lists. Review sorting and searching, trees and graphs, arrays and strings. Know how to implement and use these things in your language of choice.

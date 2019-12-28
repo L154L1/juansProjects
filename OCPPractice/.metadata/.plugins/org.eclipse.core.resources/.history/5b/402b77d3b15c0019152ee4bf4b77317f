@@ -1,0 +1,10 @@
+package p359_memory_consistency_errors;
+
+public class Test2 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

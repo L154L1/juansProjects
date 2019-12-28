@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<list key="org.eclipse.ui.internal.wizards.datatransfer.SmartImportRootWizardPage.knownSources">
+		<item value="C:\D\OCPPractice\free4"/>
+		<item value="C:\D\OCPPractice\free2"/>
+		<item value="C:\D\OCPPractice\free1"/>
+		<item value="C:\D\OCPPractice\Bonus 3"/>
+		<item value="C:\D\OCPPractice\Bonus 2"/>
+		<item value="C:\D\OCPPractice\Bonus1"/>
+		<item value="C:\D\OCPPractice\Assessment"/>
+	</list>
+	<section name="NewWizardAction">
+		<item key="NewWizardSelectionPage.STORE_SELECTED_ID" value="org.eclipse.jdt.ui.wizards.JavaProjectWizard"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.jdt.ui.java"/>
+		</list>
+	</section>
+	<section name="ChooseWorkspaceDialogSettings">
+		<item key="DIALOG_X_ORIGIN" value="380"/>
+		<item key="DIALOG_Y_ORIGIN" value="185"/>
+	</section>
+</section>

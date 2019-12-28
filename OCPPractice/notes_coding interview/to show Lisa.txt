@@ -1,0 +1,37 @@
+5. Longest Palindromic Substring
+(codility - q121119_count_palindromic_subwords)
+
+38. Count and Say		(recursive)
+
+278. First Bad Version	(binary search)
+374. Guess Number Higher or Lower	(binary search)
+
+459. Repeated Substring Pattern  (used in google round 1)
+686. Repeated String Match
+916. Word Subsets
+925. Long Pressed Name (used in google round 4)
+
+1252. Cells with Odd Values in a Matrix		(2-dimentional array)
+1266. Minimum Time Visiting All Points		(2-dimentional array)
+
+
+=== Google offer ===
+Round 1:
+
+https://leetcode.com/problems/repeated-substring-pattern/
+Round 2:
+
+Implement Auto-complete. Let's say we have a dictionary of valid words. When a user enters a prefix like "app", we should return top 5 words that match words in our dictionary like "application" or "apple". This question involved both design and code. Let's say given a prefix, you get 100 candidates, what makes your list of the top 5?
+Round 3:
+
+Given a long string (words & spaces) and a document width (# of characters), return the number of lines the document will have. We can't split words, so that means a word goes to the new line if the entire word cannot fit in the current line. Basically, this is like when Google Doc puts words on the next line as opposed to truncating the word at the end of the line. For simplicity, let's say there is no word that is longer than the width of document.
+Follow up: Let's say we want to split the document into two columns. You are given two sets of text. One is for the left column while the other is for the right column (like in a newspaper). You want to find the column position (between 1 and document width) such that the final number of total lines from both sides of the column are as close to each other as possible. Example, if you move the column to the left, number of lines in left column increases because it's narrower while number of lines in right column decreases because it's wider.
+Round 4:
+
+https://leetcode.com/problems/long-pressed-name/
+Given a string S1, is it an "extension" of another string S2? For example, "heeeeelllooooo" is an extension of "helo". The characters in S2 follow the same order as those in S1, but S1 has consecutive repeats of characters. First function, return true if S1 is an extension of S2.
+Follow up 1: what if S2 is "hello" where characters can be appear at most twice in a row? In this case, if S1 was "hhheeeeloo", it would return false.
+Round 5: [Behavioral]
+
+Let's say you have noticed that two teams are working on very similar problems but are unaware that they both are. How would you get them to work together so they are not repeating work? In what cases is this not a good idea? What if both team leaders believe that their own implementation / algorithms are better and won't compromise?
+Getting the offer and waiting for team matching. Good luck y'all!

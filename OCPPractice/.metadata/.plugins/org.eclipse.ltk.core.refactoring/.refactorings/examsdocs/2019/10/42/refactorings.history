@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename package &apos;q106&apos; to &apos;q106_Runnable_Callable&apos;&#x0D;&#x0A;- Original project: &apos;examsdocs&apos;&#x0D;&#x0A;- Original element: &apos;examsdocs/src/q106&apos;&#x0D;&#x0A;- Renamed element: &apos;examsdocs/src/q106_Runnable_Callable&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename package &apos;q106&apos;" flags="589830" hierarchical="false" id="org.eclipse.jdt.ui.rename.package" input="/src&lt;q106" name="q106_Runnable_Callable" qualified="false" references="true" stamp="1571108034645" textual="false" version="1.0"/>
+</session>

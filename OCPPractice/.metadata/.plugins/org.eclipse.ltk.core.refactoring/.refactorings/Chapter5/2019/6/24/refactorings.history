@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;p268_format_parse_numbers_currency.Test_format&apos; to &apos;FormatNumbers&apos;&#x0D;&#x0A;- Original project: &apos;Chapter5&apos;&#x0D;&#x0A;- Original element: &apos;p268_format_parse_numbers_currency.Test_format&apos;&#x0D;&#x0A;- Renamed element: &apos;p268_format_parse_numbers_currency.FormatNumbers&apos;&#x0D;&#x0A;- Update references to refactored element&#x0D;&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;Test_format&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;p268_format_parse_numbers_currency{Test_format.java[Test_format" matchStrategy="1" name="FormatNumbers" qualified="false" references="true" similarDeclarations="false" stamp="1560095921140" textual="false" version="1.0"/>
+</session>

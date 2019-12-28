@@ -1,0 +1,19 @@
+package reverse;
+
+public class ReverseInteger {
+	
+	int reverseInt(int n) {
+		String s = String.valueOf(n);
+		StringBuilder sb = new StringBuilder(s);
+		String s2 = sb.reverse().toString();
+		int m = Integer.valueOf(s2);
+		
+		return m;
+	}
+
+	public static void main(String[] args) {
+		System.out.println(new ReverseInteger().reverseInt(123456));
+
+	}
+
+}
