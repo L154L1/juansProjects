@@ -1,0 +1,89 @@
+Chapter 5 - Dates, Strings, Localization
+
+p235 java.time package
+LocalDate
+LocalTime
+LocalDateTime
+ZonedDateTime	contains a date, time, and time zone.
+
+Oracle recommends avoiding time zones unless you really need them.
+
+p241 The date and time classes are immutable, which means you need to remember to assign the results of its manipulating methods to a reference variable so that they are not lost.
+
+p247 Duration is intended for time-based units. It roughly works the same way as Period, except it is used with objects that have time. Duration is output beginning with PT. (Period is output beginning with P)
+
+p249 Period and Duration are not equivalent since Duration has time units in it, even if we don't see them and they are meant only for objects with time.
+LocalDate date = LocalDate.of(2015, 5, 25);
+Duration days = Duration.ofDays(1);
+System.out.println(date.plus(days)); // throw Exception - unsupported units
+
+p250 Table 5.4
+				Can use with Period?		Can use with Duration?
+==================================================================
+LocalDate		Yes							No
+LocalDateTime	Yes							Yes	
+LocalTime		No							Yes
+ZonedDateTime	Yes							Yes	
+
+p250 Instant class - represents a specific moment in time in the GMT time zone. Can be used to run timer in a program.	
+ZonedDateTime can be converted to Instant using toInstant() method.
+LocalDateTime cannot be converted to Instant because an Instant is a point in time and has to be recognized universally, and a LocalDateTime doesn't have time zone.
+Instant allows you to add any unit day or smaller, but not year and month, although when you print Instant, it displays a year and month.
+
+p255 internationalization and localization
+Localization including translating strings to different languages. It also includes outputting dates and numbers in the correct format for that locale.
+internationalization - i18n
+localization - l10n
+
+locale - a language and country pairing
+locale format : First comes the lowercase language code. Then comes an underscore followed by the uppercase country code. The underscore and uppercase country code are optional. It's valid for a locale to be only a language.
+
+p258 use resource bundle - allows specifying key/value pairs in a property file or in a Java class.
+A resource bundle contains the local specific objects to be used by a program. It is like a map with keys and values. The resource bundle can be in a property file or in a Java class. A property file is a file in a specific format with key/value pairs.
+Localization requires externalizing locale strings.
+
+p259 create a property file resource bundle
+The resource bundle property file filename are the name of our resource bundle followed by an underscore followed by the target locale. 
+
+p262 create a Java class resource bundle
+Most of time, a property file resource bundle is enough to meet the program's need. It does have a limitation in that only String values are allowed. Java class resource bundles allow any Java types as the value. But keys are strings regardless.
+To implement a Java class resource bundle, you create a class with the same name that you would use for a property file. Only the extension is .java rather than .properties file. And in the Java class, you must implement the getContents() method of ListResourceBundle abstract class.
+
+There are two main advantages of using a Java class instead of a property file for a resource bundle.
+- You can use a value type that is not a String.
+- You can create the values of the properties at runtime.
+
+Note : when locating property file or Java class name using getBundle(), property file or Java class name must be preceded with package name.
+ResourceBundle rb = ResourceBundle.getBundle("p262_Java_class_ResourceBundle.Zoo", locale);
+
+p263 There are two methods for getting a resource bundle:
+ResourceBundle.getBundle("name");				// use default locale resource bundle if defined, or the resource bundle with no locale.
+ResourceBundle.getBundle("name", locale);
+
+Java handles the logic of picking the best available resource bundle for a given key. It tries to find the most specific value. Where there is a tie, Java class resource bundles are given preference. p264 - Table 5.7
+- Always look for the property file after the matching Java class.
+- Drop one thing at a time if there are no matches. First drop the country and then the language.
+- Look at the default locale and the default resource bundle last.
+- p265 Java isn't required to get all the keys from the same resource bundle. It can get them from any parent of the matching resource bundle. A parent resource bundle in the hierarchy just removes components of the name until it gets to the top.
+
+MissingResourceException will be thrown if no resource bundle can be found.
+
+p266 In real program, it is common to substitute variables in the middle of a resource bundle string. The convention is to use a number inside brackets such as {0} . Using java.text.MessageClass.format() can provide a value to the variable.
+
+p267 Format and Parse Numbers and Currency
+Table 5.9 - Factory methods to get a NumberFormat
+
+Once you have the NumberFormat instance, you can call format() to turn a number into a String, and parse() to turn a String into a number.
+
+p270 Format Dates and Times 
+(Same as OCA - use DateTimeFormatter. No need to use Locale.)
+
+
+=== good questions ===
+q5 
+q15
+q16
+
+
+
+	

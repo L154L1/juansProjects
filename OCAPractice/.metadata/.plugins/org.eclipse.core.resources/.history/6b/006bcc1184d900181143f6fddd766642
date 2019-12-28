@@ -1,0 +1,22 @@
+package quickTry2;
+
+
+class MyException extends RuntimeException {}
+public class Test{
+	public static void main(String[] args){
+		try{
+			method1();
+		}
+		catch (Test1 ne) {
+			System.out.print("A");
+		}
+	}
+	public static void method1() { //line n1
+		try{
+			throw Math.random() > 0.5? new Test1() : new RuntimeException();
+		}
+		catch (RuntimeException re){
+			System.out.print("B");
+		}
+	}
+}

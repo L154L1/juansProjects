@@ -1,0 +1,152 @@
+Chapter 4 - Functional Programming
+==================================
+
+p173 using variables in lambda
+lambda expression can access static variables, instance variables, effectively final method parameters, and effectively final local variables.
+
+p173 commonly used Java built-in functional interfaces
+Functional Interfaces		# Parameters		Return Type			Single Abstract Method
+==========================================================================================	
+Supplier<T>					0					T					get
+Consumer<T>					1 (T)				void				accept
+BiConsumer<T, U>			2 (T, U)			void				accept
+Predicate<T>				1 (T)				boolean				test
+BiPredicate<T>				2 (T, U)			boolean				test
+Function<T, R>				1 (T)				R					apply
+BiFunction<T, U, R>			2 (T, U)			R					apply
+UnaryOperator<T>			1 (T)				T					apply
+BinaryOperator<T>			2 (T, T)			T					apply
+
+
+p175 Supplier is often used when constructing new objects.
+p175 Consumer is used when you want to do something with a parameter but not return anything. (BiConsumer takes two parameters)
+p177 Predicate is often used when filtering or matching.	(BiPredicate takes two parameters)
+p178 Function is responsible for turning one parameter into a value of a possibly different type and return it. (BiFunction takes two parameters). Can be use in mapping.
+p180 UnaryOperator and BinaryOperator are a special case of a function. They require all type parameters to be the same type. (UnaryOperator<T> extends Function<T, T> and BinaryOperator<T> extends BiFunction<T, T, T>)
+
+p182 Optional type
+Starting with Java 8, we use Optional type to express "we don't know" if a value is available. Think of Optional as a box that might have something in it or might be empty. Similar to C# nullable type, but Optional can have some methods such as ifPresent/isPresent/orElse/orElseGet/orElseThrow we can use to test its value otherwise we need to use if or ternary operator instead. Another advantage is we can chain Optional calls in stream pipeline.
+
+static methods : 
+Optional.empty()
+Optional.of(value)  - wrap a value to Optional type
+Optional.ofNullable(value) - value is allowed to be null, and returns Optional.empty() if null value is passed.
+
+instance methods :
+T get()
+boolean isPresent()
+void ifPresent(Consumer<T> c)
+T orElse(T other)
+T orElseGet(Supplier<T> s) - supplier that returns T
+void orElseThrow(Supplier<Exception> s) - supplier that returns an Exception type.
+
+
+note : What is the only primitive functional interface that doesn’t involve double, int, or long? - BooleanSupplier
+
+p185 using streams
+A stream in Java is a sequence of data. A stream pipeline is the operations that run on a stream to produce a result. There are 3 parts to a stream pipeline :
+- Source : where the stream comes from
+
+- Intermediate operations : transforms the stream into another one (return type is a stream type). Intermediate operations are optional to a stream pipeline. Streams use lazy evaluation, the intermediate operations do not run until the terminal operation runs.
+Stream<T> filter(Predicate<T>)
+Stream<R> map(Function<T, R>)
+Stream<R> flatMap(Function<T, R>)
+Stream<T> distinct()
+Stream<T> skip(int)
+Stream<T> limit(int)
+Stream<T> sorted()
+Stream<T> sorted(Comparator)
+Stream<T> peek(Consumer<T>)
+
+- Terminal operation : actually produces a result. Streams can be used only once (return type is not a stream). The stream is no longer valid after a terminal operation completes. Terminal operation is mandatory to stream pipeline.
+	-- Reduction means those terminal operations where all the contents of the stream are combined into a single value(primitive or object.). i.e., count(), collect(), min()/max(), reduce(). 
+	-- sum() and average() are reduction availabe only on primitive streams, not Stream. average() return type is always OptionalDouble when called on IntStream, DoubleStream or LongStream.
+	-- findAny()/findFirst(), allMatch()/anyMatch()/noneMatch() are not reduction because they don't necessarily look at all the elements.
+	-- count(), collect(), min()/max(), reduce(), forEach() do not terminate infinite stream
+	-- allMatch(Predicate)/anyMatch(Predicate)/noneMatch(Predicate) return boolean.
+	-- findAny()/findFirst() and min()/max() return Optional<T>
+	
+min()/max() allow you to pass a comparator and find the smallest or largest value in a finite stream. Like count(), they hang on an infinite stream. The method signature are :
+Optional<T> min(Comparator<? super T> comparator)
+Optional<T> max(Comparator<? super T> comparator)	
+	
+reduce() -	
+T reduce(T identity, BinaryOperator<T> accumulator)		// identity is initial value. With a initial value of T, reduce() returns T.
+Optional<T> reduce(BinaryOperator<T> accumulator)		// without identity, reduce() returns Optional type
+In above method signature, add one more use BinaryOperators for parallel stream
+
+collect() -
+// collect(Supplier, BiConsumer, BiConsumer)   
+// The 2nd BiConsumer is used by parallel stream.
+// It's commonly used on mutable objects such as StringBuilder and ArrayList, or commonly used to create a collection. 
+// Java provides some common collectors as static methods in java.util.stream.Collectors class. So we can use short signature collect(Collector) 
+	Collector toMap(), groupingBy(), partitioningBy() will all create a Map.
+	
+Note : Both List and Stream have forEach() method. 
+
+Note : Terminal operation that returns an Optional - findAny(), findFirst(), min(), or max()	
+	
+p196 Unlike a terminal operation, intermediate operations deal with infinite streams by simply returning an infinite stream.
+
+p205 three types of primitive streams :
+IntStream : used for int, short, byte and char
+LongStream : used for long
+DoubleStream : used for double and float
+
+p207 mapping methods between types of streams 
+Types to map have to be compatible types for these methods to work. They take a UnaryOperator function as parameter (mapper).
+
+Source Stream Class		to create Stream	to create DoubleStream		to create IntStream		to create LongStream
+=====================================================================================================================
+Stream					map					mapToDouble					mapToInt				mapToLong
+DoubleStream			mapToObj			map							mapToInt				mapToLong
+IntStream				mapToObj			mapToInt					map						mapToLong
+LongStream				mapToObj			mapToDouble					mapToInt				map
+
+p208 You can also use flatMap, flatMapToInt, flatMapToDouble, flatMapToLong for above mapping.
+
+
+
+p209 Optional types for primitives
+								OptionalDouble		OptionalInt		OptionalLong
+================================================================================								
+Get as a primitive				getAsDouble()		getAsInt()		getAsLong()
+orElseGet() parameter type		DoubleSupplier		IntSupplier		LongSupplier
+
+								DoubleStream		IntStream		LongStream
+===========================================================================						
+return type of min()/max()		OptionalDouble		OptionalInt		OptionalLong
+return type of sum()			double				int				long
+return type of average()		OptionalDouble		OptionalDouble	OptionalDouble
+
+note : 
+- only primitive stream has sum() and average() method.
+- The sum() method does not return an optional because if you try to add up an empty stream, you simply get zero.
+- unlike object stream, min()/max() for primitive stream don't need to pass a comparator argument.
+
+	
+p210 functional interfaces for primitives
+Just as there are special streams and optional classes for primitives, there are also special functional interfaces for primitives.
+
+Table 4.9 
+Table 4.10
+
+Interface IntFunction<R> { R apply(int value); }
+
+p214 chaining optionals
+A few of the intermediate operations for streams are available for Optional - map(), filter(). Another optional is returned after call of these methods.
+p217 flatMap is used to remove a layer.
+
+p217 collect results
+Table 4.11 example collectors
+
+
+=== goood questions ===
+q1
+q3
+q5	 sum() is reduction available only on primitive streams such as IntStream, not Stream
+q8
+q10
+q11
+q14
+q16

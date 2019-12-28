@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename compilation unit &apos;quickTry2.Climber.java&apos; to &apos;C.java&apos;&#x0D;&#x0A;- Original project: &apos;testbanks_assessment&apos;&#x0D;&#x0A;- Original element: &apos;quickTry2.Climber.java&apos;&#x0D;&#x0A;- Renamed element: &apos;quickTry2.C.java&apos;" description="Rename compilation unit &apos;Climber.java&apos;" flags="2" id="org.eclipse.jdt.ui.rename.compilationunit" input="/src&lt;quickTry2{Climber.java" name="C.java" references="false" stamp="1543027238877" version="1.0"/>
+</session>

@@ -1,0 +1,103 @@
+Chapter 6 - Exceptions and Assertions
+
+p289
+- Java checks the catch block in the order in which they appear. It is illegal to declare a subclass exception in a catch block that is lower down in the list that a superclass exception because it will be unreachable code.
+- Java will not allow you to declare a catch block for a checked exception type that cannot potentially be thrown by the try clause body. This is again to avoid unreachable code.
+
+p289 throw vs. throws
+throw means an exception is actually being thrown and throws indicate that the method merely has the potential to throw that exception.
+
+p289 when we create custom exceptions, you can extend any exception classes, it is most common to extend Exception (for checked) or RuntimeException (for unchecked).
+
+p290 When we create our own custom exception, we can use three most common constructors defined by the Exception class :
+public class CannotSwimException extends Exception {
+	public CannotSwimException() {
+		super();
+	}
+	public CannotSwimException(Exception e) {
+		super(e);
+	}
+	public CannotSwimException(String message) {
+		super(message);
+	}
+}
+
+The first constructor is the default constructor with no parameters. The second constructor shows how to wrap another exception inside yours. The third constructor shows how to pass a custom error message.
+
+p293 multi-catch statement - allows catching multiple exceptions in the same catch block. The types are separated with a pipe(|). The multiple exception types are not allowed to have subclass/superclass relationship. The variable in a multi-catch expression is effectively final.
+
+p296 try-with-resources statement
+(A resource is typically a file or database for the exam.)
+try-with-resources statement automatically closes all resources opened in the try clause. It does not require a catch or finally block to be present. It executes finally block implicitly. The feature is also known as automatic resource management, because Java automatically takes care of the closing.
+p298 One or more resources can be opened in the try clause. Parentheses are used to list those resources and semicolon are used to separate the declarations. (This works just like declaring multiple indexes in a for loop)
+
+p300 AutoCloseable
+In order for a class to be created in the try clause of try-with-resources statement, Java requires it to implement an interface called AutoCloseable. It has only one method called close(). Once close() method is implemented, all Java has to do is to call the close() method when it comes to auto-close in try-with-resources.
+
+interface AutoCloseable{
+	void close() throws Exception;
+}
+
+By declaring Exception, the AutoCloseable interface is saying that implementers may throw any exceptions they chose, or even no exception.
+
+Note: The main difference between AutoCloseable and Closeable is that AutoCloseable has Exception in the signature and Closeable has only IOException in the signature.
+
+Java closes resources in the reverse order from which it created them.
+The resources are closed before any programmer-coded catch blocks are run.
+
+Note : Objects instantiated in a try-with-resources must implement AutoCloseable or Closeable. Otherwise will not compile.
+
+p302 suppressed exceptions with try-with-resources
+- When multiple exceptions are thrown, all but the first are called suppressed exceptions. Java only treats the first exception as the primary exception.
+- Java closes resources in the reverse order from which it created them.
+- Suppressed exceptions apply only to exceptions thrown in the try clause including those thrown in the body or close() methods.
+- when try and finally block both throw an exception, the finally block takes precedence. The previous exception is lost.
+- e.getSuppressed() can retrieve all suppressed exception.
+
+p305 two new rules for the order in which code runs in a try-with-resources :
+- Resources are closed after the try clause ends and before any programmer coded catch/finally clause.
+- Resources are closed in the reverse order from which they were created.
+
+p308 Assertions
+An assertion is a boolean expression that you place at a point in your code where you expect something to be true.
+You can turn on assertion for testing or debugging while leave them off when your program is in production.
+
+syntax :
+assert boolean_expression;
+assert boolean_expression: error_message;
+
+Three possible outcomes of an assert statement:
+- If assertions are disabled, Java skips the assertion and goes on in the code.
+- if assertions are enabled and the boolean_expression is true, then the assertion has been validated. The program continues to execute in its normal manner.
+- If Assertions are enabled and the boolean_expression is false, then our assertion is invalid and a java.lang.AssertionError is throws.
+
+p309 enable/disable Assertions  (done through command line)
+By default, assert statements are ignored by JVM at runtime. To enable assertions, use the -enableassertions flag on the command line:
+java -enableassertions Rectangle
+or
+java -ea Rectangle
+
+Using -enableassertions or -ea flag without any argument enables assertions in all classes except system classes (those that come with Java)
+
+You can enable assertions for a specific class or package.
+java -ea:com.wiley.domos... myProgram		// The three dots means any class in the specified package or its subpackage.
+
+To disable assertion, just use -disableassertions or -da flag.
+
+p312 Because assertions can and should be turned off in a production environment, your assertions should not contain any business logic that affects the outcome of your code.
+
+p314 Remember, assertions are for situations where you are certain of something and you just want to verify it. They are used for debugging purpose, allowing you to verify that something that you think is true during the coding phase is actually true at runtime.
+
+=== good questions ===
+q5
+q8
+q9
+q10
+
+q12 - Since a single exception type is caught, only the same type of exception or a subclass is allowed to be assigned to the variable in the catch block. 
+
+q13 - Since a multi-catch is used, the variable in the catch block is effectively final and cannot be reassigned.
+
+q17 - Closeable was the original interface for IO classes. AutoCloseable was added in Java 7 along with try-with-resources. Closeable extends AutoCloseable for backward compatibility.
+
+q18 - The main difference between AutoCloseable and Closeable is that AutoCloseable has Exception in the signature and Closeable has only IOException in the signature. Since IllegalStateException is a runtime exception, it can be thrown by any method.

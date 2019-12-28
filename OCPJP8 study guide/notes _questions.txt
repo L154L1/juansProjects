@@ -1,0 +1,88 @@
+Assessment -
+q7 	(isSameFile() and toRealPath() requires handling IOException.)
+q16 - String d = Duration.ofDays(1).toString(); // PT24H
+
+bonus 1 -
+q4
+q5
+q7
+q10 good
+q12
+q17
+q18
+q29
+q30 (ForkJoinTask)
+q31
+q32
+q35
+q36
+q37	 cannot apply synchronized to variables
+q38
+q39
+q41
+q42
+q43 
+q44 The variable is not instantiated in the declaration or a static block, which prevents it from being marked final.
+q45
+q46
+q49
+q50
+q54
+q55
+q57
+q58
+q59
+q60
+
+bonus 2 -
+q5
+q6
+q8
+q9
+q11
+q12
+q16
+q19
+q21
+q23
+q24
+q25
+q26
+q27
+q30
+q35
+q39
+q40
+q43
+q45
+q46
+q49
+q50 - D maybe wrong. The only case is renaming a directory in which the target directory must not exist.
+q52
+q54
+q59
+
+bonus 3 -
+q3 - wrong question - no suce method as get(Calendar.DAY_OF_MONTH) on LocalDate. It should be getDayOfMonth().
+q4
+q11
+q16
+q18
+q26
+q28
+q29
+q30
+q32
+q34
+q37
+q39
+q42
+q45
+q47
+q49
+q52	The program extends RecursiveTask, not RescursiveAction; therefore the compute() method must return a value.
+
+q56 
+The methods on lines 3, 4, 6, and 7 can be performed on a BlockingDeque reference, not a Deque reference; therefore the code will not compile and E is the correct answer. If the method signature were corrected to take a BlockingDeque instead of a Deque, then the answer would be G, because the Deque may be blocked at runtime when the offerFirst(), offerLast(), pollFirst(), and pollLast() operations are called. Finally, if they were not blocked and there were no other operations on the Deque, then the output would be 8 3, and C would be correct.
+
+q60 should be C E

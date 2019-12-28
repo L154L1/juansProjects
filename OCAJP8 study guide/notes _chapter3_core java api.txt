@@ -1,0 +1,222 @@
+Chapter 3 - Core Java APIs
+
+API - can be a group of class or interface definitions that give you access to a service or functionality.
+
+String class is special and doesn't need to be instantiated with new.
+String name = "fluffy";
+
+(p103) string concatenation rule :
+- If both operands are numeric, + means numeric addition.
+- If either operands is a String, + means string concatenation.
+- The expression is evaluated left to right.
+
+A String concatenated with any other type using + gives a String.
+
+(p104) Immutable classes in Java are final. Final classes cannot have subclasses.
+
+(p105) String Pool
+Java string pool contains literal values that appear in your program. They will not be garbage collected (for how long ? ). Strings not in the string pool are garbage collected like any other objects.
+
+(p106) String methods
+length() - returns number of characters in the string.
+charAt(int index) - find out what character is at a specific index.
+indexOf(char ch)/indexOf(char ch, int fromIndex)/ indexOf(String str)/ indexOf(String str, int fromIndex) - return index when match occurs; return -1 when no match found
+
+substring(int beginIndex)
+substring(int beginIndex, int endIndex) - be careful with the endIndex you want to stop at, not included. It's allowed to be 1 past the end of the character sequence.
+
+toLowerCase()
+toUpperCase()
+equals(Object obj)
+equalsIgnoreCase(String str)
+startsWith(String str) / endsWith(String str)
+contains(String str)
+
+replace(char oldChar, char newChar)
+replace(CharSequence oldChar, CharSequence newChar)  - CharSequence is a general way of representing several classes including String and StringBuilder
+
+trim() - removes whitespace from the beginning and end of a String. Whitespace consists of spaces, \t(tab), \n(newline) and \r(carriage return).
+
+(p113) 3 ways to construct a StringBuilder :
+StringBuilder sb1 = new StringBuilder();			// default capacity is 16
+StringBuilder sb1 = new StringBuilder("animal");
+StringBuilder sb1 = new StringBuilder(10);			// tells Java the StringBuilder object starts with capacity 10
+
+Size vs. Capacity
+Size is the number of characters currently in the sequence, and the capacity is the number of characters the sequence can currently hold. When a StringBuilder is constructed, it may start with the default capacity which is 16 or one of the programmer's choosing. Once the size of StringBuilder grows, Java automatically increases the capacity for us.
+
+(p114) StringBuilder methods :
+StringBuilder has these four methods working exactly the same as in the String class -
+length() 
+charAt(int index) 
+indexOf(char ch)/indexOf(char ch, int fromIndex)/ indexOf(String str)/ indexOf(String str, int fromIndex)
+substring(int beginIndex) / substring(int beginIndex, int endIndex)
+Note : substring() in StringBuilder returns a string, not StringBuilder.
+
+StringBuilder append(String str)				- overloaded with other types of parameter so you don't need to convert the parameter to a String first.
+StringBuilder insert(int offset, String str)	- insert right before offset index
+StringBuilder delete(int start, int end)		- ending right before end index
+StringBuilder deleteCharAt(int index)
+StringBuilder reverse()
+
+String toString()		- Often StringBuilder is used internally for performance purpose but the end result needs to be a String.
+
+(p117) StringBuilder vs. StringBuffer
+Before StringBuilder was added in Java 5, StringBuffer was used. It does the same thing but more slowly because it's thread safe.
+
+(p117) Understand Equality
+- When it's reference type, == is only checking that object references refer to the same object.
+- Because JVM reuses String literals, when comparing string equality using ==, if two references refer to the same pooled string literal, they are equal.
+- String class implemented equals() method to compare the value inside the String reference (content). You should always use equals() to compare two String values.
+- StringBuilder didn't implement equals() method. If you use equals() on StringBuilder, it's the same way as using ==, only comparing references. Same is true for any other classes that didn't implement equals() method.
+
+(p119) array
+int[] numbers = new int[3];		// will set each integer element to default integer value 0
+
+int[] numbers = new int[] {42, 55, 99};  can be shortcut to:
+int[] numbers = {42, 55, 99};
+
+[] can be before or after the variable name, add adding a space is optional -
+int[] nums;
+int [] nums2;
+int num3[];
+int num4 [];
+
+(p121) array with reference variables
+We can call equals() on an array because array is an object. It compares reference equality for arrays.
+
+(p122) array of strings
+String name[] = new String[2]	// instantiate array of strings - set each string element to default value null.
+
+without instantiation, array variable as a class member points to default value null.
+class Names {
+	String names[];		// points to null
+}
+
+(p124) array sorting
+java.util.Arrays.sort(any array)
+
+(p125) array binary search
+java.util.Arrays.binarySearch(sorted array, target element)
+
+Binary search rules :
+- Target element found in sorted array			Index of match
+- Target element not found in sorted array		Negative value showing one smaller than the negative of index, where a match needs to be inserted to preserver sorted order
+- Unsorted array								unpredictable
+
+(p126)
+varargs is used like normal array. For example, args.length and args[0] are legal.
+
+(p130)
+ArrayList can use generics types since generics was introduced in java 5. ( I feel like generic types are only reference types, primitive types will be autoboxed to their wrapper types)
+ArrayList can use diamond operator when instantiating.
+ArrayList implements List interface.
+	List<String> list = new ArrayList<>();
+
+Without generic type, ArrayList is collection of Objects, with generic type, ArrayList is type safe.
+ArrayList implements toString() method so you can easily see contents by printing it. (Array doesn't do the same)
+
+(p130)
+'E element'  in method signature, E is used by convention in generics to mean "any class".
+
+(p130) Using an ArrayList
+add()
+	boolean add(E element)
+	void add(int index, E element)
+	
+remove()
+	boolean remove(Object obj)  - remove the first matching value, return false if no match found.
+	E remove(int index)
+	
+set()
+	boolean set(int index, E element)
+	
+isEmpty()
+	boolean isEmpty()
+	
+size()
+	int size();
+	
+clear()
+	void clear()
+	
+contains()
+	boolean contains(Object obj)
+	
+equals()	- ArrayList has a custom implementation of equals() so you can compare two array lists to see if they contain the same elements in the same order.
+	boolean equals(Object obj)
+	
+	
+(p134)
+ArrayList is only used for reference types. If we want to use it for primitive types, we need to use each primitive type's wrapper class. We don't need to worry about whether a primitive or wrapper class is returned since autoboxing was introduced in Java 5.
+
+p(134) convert string to primitive or wrapper class (p135 table)  (Wrapper classes make its primitive type nullable)
+parse() method convert string to a primitive type, for example :
+	int primitive = Integer.parseInt("123")
+valueOf() method converts string to a wrapper class, for example :
+	Integer wrapper = Integer.valueOf("123");
+	
+If the string passed is not valid to convert, Java throws exception such as NumberFormatException.	
+
+(p136) convert list (can be ArrayList) to array
+String[] stringArray = list.toArray(new String[0]);  // The advantage of specifying a size of 0 is that Java will create a new array of the proper size to fit the list. You can also suggest a larger size instead, such as 'new String[list.size()]'
+
+(p136) convert array to list (not ArrayList)
+The created list is not normal list. It's array backed list meaning it's fixed sized and changed with array because they point to the same data store. Using list.remove() will throw UnsupportedOperation exception.
+Arrays.asList( array or varargs)
+
+(p138) sort ArrayList (or list)
+Collections.sort(list)
+Collections.binarySearch(list, e)	(list should be sorted. The return value follows the same rule as Arrays.binarySearch() )
+
+(p158 - q18)
+Both array and ArrayList are ordered and have indexes.
+
+(p158 - q19)
+An array does not override equals() and so uses object equality.
+ArrayList does override equals() and defines it as the same elements in the same order.
+
+
+(p138) Java 8 date and time classes. 
+LocalDate
+LocalTime
+LocalDateTime
+
+static methods :  now(), of()
+
+Java made their constructors private so you are forced to use static method now() or of() to create date and/or time.
+
+(Oracle recommends avoiding time zones unless you really need them. ZonedDateTime handles time zones.)
+
+(Before Java 8, date and time classes were first Date and later Calendar. datetime were created using their constructors. Month index waa 0 based instead of 1 based, which was confusing.)
+
+(p142) Manipulating Dates and Times
+The date and time classes are immutable meaning you must assign the results from manipulation to a variable so they are not lost.
+(p144) Table 3.4 - manipulating methods in LocalDate/LocalTime/LocalDateTime
+
+(p145) 
+Period.ofXXXX() or Period.of() - used with date
+(Duration is used with time but not in OCA scope) 
+
+(p146)
+long LocalDate.toEpochDay()
+long LocalDateTime.toEpochSecond()
+
+(p148)
+DateTimeFormatter can be used to format any type of date or/and time object - convert date or/and time object to a formatted String.
+
+- Below methods use Java predefined styles such as FormatStyle.SHORT/FormatStyle.MEDIUM
+DateTimeFormatter.ofLocalizedDate(style)
+DateTimeFormatter.ofLocalizedDateTime(style)
+DateTimeFormatter.ofLocalizedTime(style)
+
+- Custom format
+DateTimeFormatter.ofPattern("MMMM dd, yyyy, hh:mm");
+(p150 - format strings)
+
+- The format method is declared on both the formatter objects and the date/time objects. It returns String type.
+
+(151) Parse Dates and Times
+parse() method uses a formatter to convert a formatted string to date or/and time object. The formatter can be custom formatter or a default value.
+If the string passed doesn't match the format, Java throws a runtime exception.
+

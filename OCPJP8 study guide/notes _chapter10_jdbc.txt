@@ -1,0 +1,118 @@
+Chapter 10 - JDBC
+
+p512 Key JDBC interfaces -
+Driver : knows how to get a connection to a certain database
+Connection : Knows how to communicate with the database
+Statement : Knows how to run the SQL
+ResultSet : Knows what was returned by a SELECT query
+
+All database classes are in the package java.sql
+
+p514 JDBC URL
+jdbc:<DB product name>:<DB specific connection details>
+
+p515 get a database connection
+Two main ways to get a database connection : DriverManager or DataSource
+
+DriverManager is the one covered on the exam. Do not use it in real world code, use DataSource instead. DataSource is a factory, and it has more features than DriverManager. For example, it can pool connections or store the database connection info outside the application.
+
+The DriverManager class is in the JDK, as it is an API that comes with Java. It uses the factory pattern, which means that you call a static method to get a connection. The factory pattern means that you can get any implementation of the interfaces when calling the static method - getConnection()
+
+p518 correct JDBC driver jar should be in the classpath for DriverManager.getConnection() to be successful. 
+
+p516 DriverManager class looks through the classpath for JARs that contain a Driver. DriverManager knows that a JAR is a driver because it contains a file called java.sql.Driver in the directory META-INF/services.
+
+p517 You might see Class.forName("<driver name>") used in older code before getting a Connection. It loads a class that allows DriverManager to use a Driver, even if the JAR doesn't have a META-INF/services/java.sql.Driver file. There is no harm in including Class.forName(), even the newer driver does have this file. 
+
+p518 Having META-INF/services/java.sql.Driver inside the JAR became mandatory with JDBC 4.0 in Java 6.
+
+
+p519 choose a ResultSet type - 
+TYPE_FORWARD_ONLY
+TYPE_SCROLL_INSENSITIVE
+TYPE_SCROLL_SENSITIVE
+
+By default, a ResultSet is in TYPE_FORWARD_ONLY mode. This is what you need most of the time. In this mode, you go through the data once in the order in which it was retrieved.
+
+Two other modes that you can request when creating a Statement are TYPE_SCROLL_INSENSITIVE and TYPE_SCROLL_SENSITIVE. Both allow you to go thru the data in any order - both forward or backward, you can even go to a specific spot in the data.
+
+The difference between TYPE_SCROLL_INSENSITIVE and TYPE_SCROLL_SENSITIVE is what happens when data changes in the database while you are scrolling. With TYPE_SCROLL_INSENSITIVE, you have a static view of what the ResultSet looked like when you did the query. With TYPE_SCROLL_SENSITIVE, you would see the latest data when scrolling through the ResultSet.
+
+For exam, you need to know forward only and scroll insensitive. Most databases drivers don't actually support the TYPE_SCROLL_SENSITIVE mode.
+
+p520 choose a ResultSet Concurrency mode
+CONCUR_READ_ONLY
+CONCUR_UPDATABLE
+
+By default, a ResultSet is in CONCUR_READ_ONLY mode. This is what you need most of the time. It means that you can't update the result set. Most of the time, you will use INSERT, UPDATE, or DELETE SQL statement to change the database rather than a ResultSet.
+There is one other mode that you can request when creating a Statement. It lets you modify the database through ResultSet. It is called CONCUR_UPDATABLE. But it's not universally supported. 
+
+If the mode you request isn't available, the driver can downgrade you to what is supported.
+
+createStatement(ResultSet_Type, Concurrency_Mode)
+ResultSet type is the first parameter, and the concurrency mode the second parameter. If you reverse them, it will still complile but will throw SQLException at runtime.
+
+Note : If you call createStatement() without any parameters, the ResultSet will be TYPE_FORWARD_ONLY and CONCUR_READ_ONLY.
+
+p522 PreparedStatement
+On the exam, only Statement is covered. In real world, you should not use Statement directly. You should use a subclass called PreparedStatement, which has three advantages : performance, security, and readability.
+
+p527 get data for a column - ResultSet get methods
+getInt 
+getLong 
+getDouble 
+getString 
+getBoolean 
+getDate 
+getTime 
+getTimeStamp 
+getObject
+
+Use rs.next() to advance one row in ResultSet - it moves forward one row and returns true if pointing to a valid row. Always use if statement or while loop when calling rs.next()
+
+p528 JDBC date and time types
+JDBC Type				Java 8 Type					Contains
+======================================================================
+java.sql.Date			java.time.LocalDate			Date only
+java.sql.Time			java.time.LocalTime			Time only
+java.sql.Timestamp		java.time.LocalDateTime		Both data and time
+
+p528 getObject can return any type. For a primitive, it uses the wrapper class.
+
+p529 scrollable ResultSet
+A scrollable ResultSet allows you to position the cursor at any row.
+next()		moves forward one row and return true if pointing to a valid row, otherwise false. 
+previous()	moves backward one row and return true if pointing to a valid row, otherwise false.
+first() / last()	return a boolean for whether they were successful at finding a row.
+beforeFirst() / afterLast()		return type is void
+
+Note: absolute() and relative() return boolean value to indicate it's a valid row.
+
+p530 absolute() takes row number to which you want to move the cursor as a parameter. It returns a boolean for whether it's successful at finding a row.
+- A positive number moves the cursor to the numbered row.
+- Zero moves the cursor to a location immediately before the first row.  -- rs.absolute(0) returns false
+- A negative number means to start counting from the end of the ResultSet rather than from the beginning. -1 is the last row.
+
+p531 relative() moves forward or backward the requested number of rows. It returns a boolean for whether it's successful at finding a row.
+
+p533 It is important to close resources when you finished with them to avoid leaking resources like we did for IO. This is true for JDBC resources as well. We can use try-with-resource syntax.
+
+p534 Closing JDBC resources should close all three resources, although it's not strictly necessary. The following is true :
+- Closing a connection also closes the Statement and ResultSet.
+- Closing a Statement also closes the ResultSet.
+- JDBC automatically closes the previous ResultSet object when you run another sql statement from the same Statement.
+
+
+=== good questions ===
+q1
+
+q6
+Class.forName() was used with old JDBC drivers to load the driver. It is not needed in JDBC 4.0. If it is called, it could throw a ClassNotFoundException. By contrast, DriverManager.getConnection() could throw a SQLException when the driver cannot be found. 
+
+q10
+q11
+q13
+
+q18 - should be E
+
+q20 - missing {} for try-with-resource statement

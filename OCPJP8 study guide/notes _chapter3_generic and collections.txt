@@ -1,0 +1,207 @@
+Chapter 3 - Generics and Collections
+====================================
+
+p109 - generic class someclass<T>, the generic type T is available anywhere within the class. When you instantiate the class, you tell the compiler what T should be for that particular instance.
+
+Note : generic type variable can be any non-primitive type.
+
+p110 naming convention for generic type parameter
+use single uppercase letter to make it obvious that they are not real class name.
+E for an element
+K for a map key
+V for a map value
+N for a number
+T for a generic data type
+S,U,V, and so forth for multiple generic types
+
+p113 You can't do with generic types :
+- cannot pass a primitive type as a generic type parameter. (generic type variable can be any non-primitive type)
+- static variable cannot be declared as generic type.
+
+p114 generic method
+When class is not generic and method wants to be generic, the generic formal type is specified immediately before the return type of the method.
+Example :
+class Test{
+	public static <T> MyClass<T> ship(T t){
+		return new MyClass<T>();
+	}
+	
+	public static <T> void sink(T t) {}
+	
+	public static <T> T identity(T t) { return t; }
+	
+	public static T noGood(T t) { return t; }  // does not compile
+	
+	
+	public <T> T getValue(T t) {
+		return t;
+	}
+}
+
+p117 Bounded wildcards restrict what types can be used in that wildcard position. A bounded parameter type is a generic type that specifies a bound for the generics. 3 types of bounds :
+unbounded wildcard			?					List<?> list = new ArrayList<String>();
+wildcard with upper bound	? extends type		List<? extends Exception> list = new ArrayList<RuntimeException>();
+wildcard with lower bound	? super type		List<? super Exception> list = new ArrayList<Object>();
+
+? extends type - type can be interface as well as class
+
+note :  A wildcard or lower/upper bound may be specified on the left side of a declaration but not on the right side.
+
+p120
+// When working with upper bound or unbounded wildcards, the list becomes logically immutable which means that the object cannot be modified.
+// In below example, List<? extends Bird> could be List<Bird> or List<Sparrow> or some other child types of Bird that haven't been written yet.
+// You cannot add a Bird to List<Sparrow>. And you cannot add a Sparrow to List<Bird>. Hence they don't compile.
+
+p160 A compiler error results from code that attempts to add or remove an item in a list with an unbounded or upper-bounded wildcard !!!
+
+p121 - table 3.3
+
+p124 collection - A collection is a group of objects contained in a single object. 
+There are 4 main interfaces in Java collection framework :
+- List	Ordered collection, allows duplicate entries, elements can be accessed by an int index
+- Set	does not allow duplicate entries
+- Queue	a collection that orders its elements in a specific order for processing. Typical order is first-in, first-out order, but it can be the other way around.
+- Map	a collection that maps keys to values with no duplicate keys allowed. The elements in a map are key/value pairs.
+
+Collection interface is the root of all collections except maps.
+Common collection methods for List/Set/Queue
+add()		boolean add(E element)
+remove()	boolean remove(Object o)
+isEmpty()	boolean isEmpty()
+size()		int size()
+clear()		void clear()
+contains()	boolean contains(Object o)
+
+p128 compare List implementations
+- ArrayList : like resizable array. most commonly used to instantiate a List.
+- LinkedList : implements both List and Queue. The main benefit is that you can access, add, and remove from the beginning and end of the list. It's a good choice when you use it as a queue.
+- Vector : deprecated. It does the same as ArrayList except more slow and it's thread-safe.
+- Stack : deprecated. If you need a stack, use ArrayDeque instead.
+
+p130 List methods -
+void add(E element)
+void add(int index, E element)
+E get(int index)
+int indexOf(Object o)
+int lastIndexOf(Object o)
+void remove(int index)
+E set(int index, E e)
+
+p132 compare Set implementations
+- HashSet : it uses hashCode() method of the objects to retrieve them more efficiently. But you lose the order you insert the element.
+- TreeSet : stores elements in a sorted tree structure. (TreeSet also implements NavigableSet)
+
+p134 TreeSet also implements NavigableSet which provide some special methods - lower(e)/floor(e)/ceiling(e)/higher(e)
+higher(e)	returns the smallest element greater than the specified one
+ceiling(e) returns the smallest element greater than or equal to the specified one
+
+p135 compare Queue implementations
+- LinkedList : implements both List and Queue. It's a list as well as a double-ended queue. It works the exactly same way as ArrayDeque. But it's not as efficient as a pure queue.
+
+- ArrayDeque : pure double-ended queue. commonly used as queue or stack. Depends on you use offer(e) or push(e) method when adding an element. 
+boolean offer(E e) adds an element to the back of the queue and return whether successful. Then you are dealing with a queue (FIFO).
+void push(E e) adds an element to the front of the queue. Then you are dealing with a stack (LIFO).
+FIFO - offer/poll/peek
+LIFO - push/poll/peek  (can also use pop instead of poll)
+
+Queue only supports offer() and doesn't support push. But Deque suports buth offer() and push().
+
+p138 compare Map implementations
+- HashMap : stores keys in a hash table. lose the order in which you insert the elements.
+- LinkedHashMap : retain the order in which you insert the element.
+- TreeMap : stores the keys in a sorted tree structure.
+- HashTable : deprecated. old and thread-safe. We now use HashMap.
+
+Map methods :
+void clear()
+boolean isEmpty()
+int size()
+V get(Object key)
+V put(K key, V value)	Adds or replaces key/value pair. Returns previous value or null. put method will just update the value if key was already present.
+V remove(K key)
+boolean containsKey(Object key)
+boolean containsValue(Object value)
+Set<K> keySet()
+Collection<V> values()
+
+p140 compare all collection types (table 3.7/3.8)
+Most collection types allow null to be added as an element. But :
+- the data structures that involve sorting do not allow nulls because you cannot compare null with other values. This means TreeSet cannot contain null elements, TreeMap cannot contain null keys. It will compile but throws NullPointerException at runtime.
+- ArrayDeque cannot contain null elements because poll() use null as a special return value to indicate the collection is empty. You cannot put null in an ArrayDeque.
+- old HashTable has no null keys or values
+
+p142 table 3.9 - choose the right collection type
+
+p143 Numbers sort before letters and uppercase letters sort before lowercase letters.
+
+p143 Comparable interface - implemented inside the object being compared
+public interface Comparable<T> { 
+	public int compareTo(T t); 
+}
+By implementing Comparable interface, the objects become comparable which means Collections.sort(list) method can be called for sorting, otherwise it doesn't compile. Alternatively we can implement Comparator outside the object then call sort(list, comparator)
+
+Rules of compareTo return value :
+- 0 is returned when the current object is equal to the compared object (the argument to compareTo).
+- negative integer is returned when the current object is smaller than the compared object.
+- positive integer is returned when the current object is larger than the compared object.
+
+p146 You are strongly encouraged to make your comparable class consistent with equals method implementation - compareTo() and equals() should be consistent.
+
+p146 Comparator interface - implemented outside the object being compared. When you want to sort an object that didn't implement Comparable, or you want to sort objects in different ways.
+public interface Comparator<T> { 
+	public int compare(T t1, T t2); 
+}
+Both Comparable and Comparator are functional interfaces. We usually implement Comparator with lambda but not for Comparable because Comparator is implemented outside the object whereas Comparable is implemented inside the object.
+
+p148 comparison of Comparable and Comparator
+Difference											Comparable	Comparator
+--------------------------------------------------------------------------
+Package name										java.lang	java.util
+Interface must be implemented by class comparing?	Yes			No
+Method name in interface							compareTo	compare
+Number of parameters								1			2
+Common to declare using lambda						No			Yes
+
+p150 searching and sorting
+The sort method uses the compareTo() method to sort. It expects the objects to be sorted to be comparable, otherwise it will not compile when calling sort(list). But you can fix this by passing a comparator to sort() method - sort(list, comparator), meaning you can specify sort order without using compareTo() method if you pass a comparator.
+sort() and binarySearch() allow you to pass a comparator object when you don't want to use the natural order (its Camparable implementation).
+
+P151 Adding an object that does not implement Comparable to a TreeSet will throw an exception at runtime.
+
+p153 Method References
+:: operator tells Java to pass the parameters into the method. ( or no parameter, such as, LocalDate::now <=> ()->LocalDate.now())
+There are 4 formats for method references :
+- static method
+- instance method on a particular instance
+- instance method on an instance to be determined at runtime
+- constructors
+
+p154 Java 8 methods for collection -
+list.removeIf(Predicate<T>)
+list.replaceAll(UnaryOperator<T>)
+list.forEach(Consumer<T>)
+
+p155 new Java 8 Map APIs
+putIfAbsent(key, value) - putIfAbsent method skips put if the value is already set to a non-null value for a key.
+
+merge(key, new value, BiFunction)  
+- merge method uses a BiFunction as mapper. It will pass an key's present value and a new value as input to this BiFunction and take its returned value as final value for the key.
+- merge method also has logic for what happens if a null value or a missing key involved. In this case, it doesn't call the BiFunction at all, and it simply uses the new value.
+- if the mapping function is called and returns null, the key is removed from the map.
+- merge method will return the merged value.
+
+p157 computeIfPresent and computeIfAbsent are not in OCP scope.
+computeIfPresent(key, BiFunction) 
+computeIfAbsent(key, Function)
+
+
+=== good questions ==
+q6 
+q7
+q12
+q13
+q14
+q18
+q19
+q25
+

@@ -1,0 +1,76 @@
+Chapter 1 - Advanced Class Design
+
+p6 - (OCA review) static and final
+final prevents a variable from changing or a method from being overridden.
+static makes a variable shared at the class level and uses the class name to refer to a method.
+
+p9 instanceof operator is commonly used to determine if an instance is a subclass of a particular object before applying a explicit cast. 
+If the null or a reference pointing to null is used to check instanceof, the result is false because null is not an object.
+
+p10 - (OCA review) virtual method invocation
+virtual methods are just regular non-static methods. Java looks for overridden method rather than the one in the class.
+
+p11 annotating overridden methods - @Override to explicitly indicate to Java this is override method so when you break override rules, Java will throw compiler error. It only applies to a method.
+(An annotation is extra information about the program, and it's a type of metadata. It can be used by the compiler or even at runtime.)
+
+p13 All classes in Java inherit from Java.lang.Object, either directly or indirectly, which means they can inherit any methods defined in Object. Below are three commonly overridden methods for a custom implementation.
+public boolean equals(Object obj)
+public int hashcode()
+public String toString() 
+
+p19 hashCode() rules :
+- Within the same program, the result of hashCode() should not change which means you should not include variables that will change.
+for example, including the name is fine. Including weight is not good because weight could change regularly.
+- If equals() return true when called with two objects, calling hashCode() on each of them must return the same result.
+This means hashCode() can use a subset of the variables that equals() uses.
+- If equals() retrun false when called with two objects, calling hashCode() on each of them does not have to return a different result.
+This means hashCode() results do not have to be unique when called on unique objects.
+
+p20 enum
+enum is a class that represents enumeration. An enumeration is a fixed set of constants. To create an enum, use enum keyword instead of class keyword.
+Behind the scenes, an enum is a type of class that mainly contains static members  (a fixed set of constant values). 
+enum can have constructors, fields and methods. enum constructor can only be private (or default).
+enum values are separated by comma. The semicolon at the end of the enum values is optional if the only thing in the enum is that list of values.
+Java only construct the enum value the first time we ask for that value. After that it just returns the already-constructed enum value.
+If enum itself has an abstract method, every enum value is required to implement this method, otherwise will get compiler error. We can create a default implementation and override it only for the special values.
+
+p24 There are 4 types of inner classes :
+- member inner class
+- local inner class
+- anonymous inner class (like C# initializer)
+- static nested class
+
+note :  Only nested static classes are permitted to contain static members (including static initializers). 
+member inner class, local inner class and anonymous inner class cannot have static members unless they are constant variables (static final variable).
+
+p25 A member inner class is defined at the member level of a class.(the same level as member methods, instance variables and constructors). It can :
+- can use all 4 access modifiers like any other members.
+- can extend class or implement interfaces
+- can be abstract or final
+- cannot declare static fields or methods
+- can access members of outer class including private members
+
+Note : Inner classes are not allowed to contain static methods or static variables. Only nested static classes are permitted to contain statics.
+
+p27 we can have inner interface. It can be private to the outer class.
+
+p27 A local inner class is a nested class defined within a method. 
+- They do not have a access specifier.
+- They cannot be declared static and cannot declare static fields and methods.
+- They have access to all fields and methods of the enclosing class.
+- They do not have access to local variables of the enclosing method unless those variables are final or effectively final.
+
+p29 An anonymous inner class is a local inner class that does not have a name. It is declared and instantiated all in one statement using the new keyword. Anonymous inner classes are required to extend an class or implement an interface. They are useful when you have a short implementation that will not be used anywhere else.(p30) But you can't implement both an interface and extend a class unless the class to extend is java.lang.Object.
+
+note : An anonymous inner class must either extend a class by name or implement exactly one interface.
+
+p31 static nested class 
+It's a static class defined at the member level. It can use all 4 access modifiers. It can be instantiated without an object of the enclosing class. It can't access the instance variables without an explicit object of the enclosing class. 
+Static nested class create a namespace because the enclosing class name must be used to refer to it. 
+You can static import static nested class
+
+
+=== hard questions ===
+q17
+
+

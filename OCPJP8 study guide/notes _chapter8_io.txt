@@ -1,0 +1,197 @@
+Chapter 8 - IO
+
+p407 The root directory is the topmost directory in the file system, from which all files and directories inherit. In Windows, it's denoted with a drive name such as C:\, while on Linux it is denoted with a single forward slash / .
+
+Diffenrent operating systems use different file systems to manage their data. For example, Windows-based systems use different file system than Unix-based ones.
+
+p409 work with File object - Table 8.1
+boolean exists()
+String getName()
+String getAbsolutePath()
+boolean isDirectory()
+boolean isFile()
+long length()
+long lastModified()
+delete()
+renameTo(File)
+mkdir()
+mkdirs()
+getParent()
+File[] listFiles()
+
+p412 Java provides three built-in streams, System.in, System.err, and System.out.
+
+p413 Byte Streams vs. Character Streams
+1. The stream classes are used for inputting and outputting all types of binary or byte data.
+2. The reader and writer classes are used for inputting and outputting only character and String data.
+
+java.io API is structured such that all stream classes have the word InputStream or OutputStream in their name, while all Reader/Writer classes have either Reader or Writer in their name.
+
+p414 low-level vs. high-level streams
+A low-level stream connects directly with the source of the data, such as a file, an array, or a string. Low-level streams process the raw data in a unfiltered manner. For example, a FileInputStream reads file one byte at a time.
+Alternatively, a high-level stream is built on top of another stream using wrapping.
+Wrapping is the process by which an instance is passed to the constructor of another class and operations on the resulting instance are filtered and applied to the original instance.
+
+p415 Using buffered streams when working with files has performance gain because it can read more sequential bytes at a time so reduce round-trips between java process and the file system.
+
+p415 stream based classes 
+java.io library defines four abstract classes that are the parents of all stream classes : InputStream, OutputStream, Reader, and Writer.
+
+p416 java.io class properties
+- A class with the word InputStream or OutputStream in its name is used for reading or writing binary data.
+- A class with the word Reader or Writer in its name is used for reading or writing character or string data.
+- Most, but not all, input classes have a corresponding output class.
+- A low-level stream connects directly with the source of the data.
+- A high-level stream is built on top of another stream using wrapping.
+- A class with Buffered in its name reads or writes data in groups of bytes or characters and often improves performance in sequential file system.
+
+p417 Table 8.2 - java.io stream classes
+
+p418 closing the stream
+Since streams are considered resources, it is imperative that they be closed after they are used lest they lead to resource leaks. You can accomplish this by calling the close() method in a finally block or using try-with-resource syntax.
+In a file system, failing to close a file could leave it locked by the operating system such that no other processes could read/write to it until the program is terminated.
+
+p418 flushing the stream
+When data is written to an OutputStream, the underlying operating system does not necessarily guarantee that the data will be written to the file immediately. In many operating system, the data maybe cached in memory, with a write occurring only after a temporary cache is filled or after some amount of time.
+flush() method requests that all accumulated data be written immediately to disk.
+You do not need to call the flush() explicitly when you have finished writing to file, since close() method will automatically do this.
+
+p419 marking the stream
+InputStream and Reader classes include mark(int) and reset() methods to move the stream back to an earlier position.
+Before calling either of these methods, you should call markSupported(), which returns true if mark() is supported.
+Call mark(int) with a read-ahead limit value. You can then read as many bytes as you want up to the limit value. If at any point you want to go back to the earlier position where you last called mark(), then you just call reset() and the stream will revert to an earlier state. In practice, it's not actually putting data back to the stream but stroring the data that was already read into memory for you to read again. Therefore you should not call the mark with too large a value as this could take up a a lot of memory.
+
+If you call reset() after you have passed your mark() read limit, an exception may be thrown at runtime since the marked position may become invalidated. We say "an exception may be thrown" as some implementations may use a buffer to allow extra data to be read before the mark is invalidated.
+
+Example : assume we have an InputStream instance whose next values are ABCD. Consider the following code snippet :
+InputStream is = ...
+System.out.print((char)is.read());
+if(is.markSupported()) {
+	is.mark(100);
+	System.out.print((char)is.read());
+	System.out.print((char)is.read());
+	is.reset();
+}
+System.out.print((char)is.read());
+System.out.print((char)is.read());
+System.out.print((char)is.read());
+
+If the mark() operation is supported, the output is ABCBCD. If not supported, the output  is ABCD .
+
+p420 skip over data
+InputStream and Reader classes also include skip(long) method, which skips over a certain number of bytes. It returns a long value which indicates the number of bytes that were actually skipped. If return value is zero or negtive, such as if the end of the stream was reached, no bytes were skipped.
+
+Example : assume that we have an InputStream instance whose next values are TIGERS. Consider the following code snippet:
+InputStream is = ...
+System.out.print((char)is.read());
+is.skip(2);
+is.read();
+System.out.print((char)is.read());
+System.out.print((char)is.read());
+
+The output is TRS .
+
+Note : Calling skip(1) is equivalent to calling read() and discarding the output.
+
+
+p420 FileInputStream / FileOutputStream
+used to read bytes from a file or write bytes to a file, one byte at a time. They include constructors that take a File object or String, representing a path to a file.
+FileInputStream object is commonly accessed by successive calls to read() method until value of -1 is returned, indicating end of the file.
+Note : for large files, read()/write() on FileInputStream/FileOutputStream  would not be good. We can improve by using byte arrays with buffered streams.
+
+p422 BufferedInputStream / BufferedOutputStream 
+We can wrap FileInputStream and FileOutputStream with BufferedInputStream and BufferedOutputStream respectively to enhance performance. 
+Instead of reading the data one byte at a time, we use underlying method read(byte[]) method of BufferedInputStream, which returns the number of bytes read into the provided byte array. When it returns 0, then we know that we have reached the end of the file.
+We write data into BufferedOutputStream using write(byte[], int, int) method, which takes as input a byte array, an offset, and a length value.
+A buffer size of 1024 is commonly used as it appropriate for a wide variety of circumstances. It's common to choose a power of 2 for the buffer size, since most underlying hardware is structured with file block and cache sizes that are a power of 2.
+
+p424 FileReader/FileWriter BufferedReader/BufferedWriter
+FileReader/FileWriter along with their associated BufferedReader/BufferedWriter are among the most convenient classes in the java.io API, in part because reading and writing text data are among the most common ways that developers interact with files.
+Like FileInputStream/FileOutputStream classes, FileReader/FileWriter contain read() and write() methods respectively. They read/write char values instead of byte values.
+BufferedReader has a convenient readLine() method.
+
+
+java.io.BufferedReader.mark(int readAheadLimit) - marks the current position in the stream. Invoking reset() will reposition the stream to this point. readAheadLimit − number of characters to be read while preserving the mark.
+
+p426 character encoding
+Charset ("US-ASCII", "UTF-8" ,"UTF-16" 
+
+p426 ObjectInputStream/ObjectOutputStream
+serialization - the process of converting an in-memory object to a stored data format ( file, network ...).
+deserialization - the reciprocal process of serialization that converts stored data into an object.
+
+p427 Attempting to serialize an object will throw a NotSerializableException if the class or one of its contained classes does not properly implement the Serializable interface. 
+You can use transient keyword on the reference to the object, which will instruct the serializing process to skip it and avoid throwing NotSerializableException. The only limitation is that the data stored in the object will be lost during the serialization process.(The instance variable will just use default values after serialization.)
+Besides transient instance variables, static class members will also be ignored(values kept) during serialization and deserialization process, which makes sense as static class variables do not belong to on particular instance. 
+p431 When you deserialize an object, the constructor of the serialized class and default initializations (initialization blocks) are ignored.
+
+p428 serializing and deserializing objects
+java.io API provides two stream classes for object serialization and deserialization called ObjectInputStream and ObjectOutputStream.
+ObjectOutputStream includes a method to serialize the object to the stream called void writeObject(Object). If the provided object is not serializable, or it contains an embedded reference to a class that is not serializable or marked transient, a NotSerializableException will be thrown at runtime. (Every instance variable must either be Serializable or be marked transient, to be able to serialize with ObjectOutputStream)
+
+For a reciprocal process, ObjectInputStream includes a deserialization method that returns an object called readObject(). Because the return type is java.lang.Object, it indicates that the object will have to be cast explicitly at runtime to be used.
+p431 readObject() can't use -1 integer value to determine when we have finished reading a file. Instead the proper technique is to catch a EOFException, which marks the program encountering the end of the file. We don't do anything with the exception other than finish the method. This is one of the few times when it is perfectly acceptable to swallow an exception.
+
+p431 ObjectInputStream and ObjectOutputStream do support reading and writing null objects. Therefore it's important to check for null value when reading from a serialized data stream. In the example application, we rely on the property of the instanceof operator always to return false for null value to skip explicitly needing to check for null value.
+
+
+
+p432 PrintStream and PrintWriter
+PrintStream and PrintWriter are high level stream classes that write formatted representation of Java objects to a text-based output stream. 
+PrintStream operates on OutputStream instances and writes data as bytes.
+PrintWriter class operates on Writer instances and writes data as character.
+
+System.out and System.err are actually PrintStream objects.
+
+print-based methods :
+print()
+println()
+format()
+printf()
+
+print-based methods all have underlying write() method which throws a checked IOException. But they don't throw such exception.
+
+p434 format() and printf()
+format() and printf() have identical input values, output values, and behavior. They can be used interchangeably.
+public PrintWriter format(String format, Object args...)
+public PrintWriter printf(String format, Object args...)
+
+p436 Figure 8.3 Diagram of java.io classes
+
+p437 Console class
+The Console class was introduced in Java 6 as a more evolved form of the System.in and System.out stream classes. It is now the recommended technique for interacting with and displaying information to the user in a text-based environment.
+Console class is a singleton. It is created by calling System.console() method.
+
+p440 flush() method forces any buffered output to be written immediately. It is recommended that you call the flush() method prior to calling any readLine() or readPassword() methods in order to ensure that no data is pending during the read. Failure to do so could result in a user prompt for input with no preceding text, as the text prior to the prompt may still be in the buffer.
+
+p440 readLine() retrieves a single line of text from the user, and the user presses the Enter key to terminate it.
+The Console class supports an overloaded version of readLine() method with the signature readLine(String format, Object... args), which displays a formatted prompt to the user prior to to accepting text.
+
+p441 readPassword() - similar to readLine(), except that echoing is disabled, so user does not see the text they are typing. Like the readLine(), readPassword() also has a overloaded version with the signature readPassword(String format, Object...args) used for displaying a formatted prompt to the user prior to accepting text. Unlike readLine() method, readPassword() method returns a array of characters instead of a String, for security reason -
+String values are added to a shared memory pool for performance reasons in Java. This means that if a password that user typed in were to be returned as a String, it might be available in the String pool long after the user entered it. If the memory is ever dumped to disk, it means the password could be recovered by a malicious individual. The advantage of the readPassword() using a character array is that as soon as the password data is read and used, it can be erased by writing garbage data to the elements of the array. This would remove the password from memory long before it would be removed by garbage collection if a String value were used.
+
+p443 Exam Essentials
+- java.io.File class - File instance can be created by passing a path string to new File() constructor.
+- Distinguish between byte and character streams
+- Distinguish between low-level and high-level streams
+- close() method is shared by all stream classes and can be used implicitly by using try-with-resource syntax.
+- flush() method is used in output stream to force the writing of the data to the underlying resource.
+- Classes can implement java.io.Serializable interface to indicate that they support serializing their data to disk. The interface requires that all instance members of the class are Serializable or marked transient. The String and all Java primitives are Serializable. ObjectInputStream and ObjectOutputStream classes can be used to read and write a Serializable object from or to a stream respectively.
+
+
+
+(If a class implements java.io.closeable, you must call close() method of that class; otherwise, it will result in a resource leak.
+The Garbage Collector (GC) is only responsible for releasing memory resources. If you are using any class that acquires system resources (such as network, file, database, and other handles), it's your responsibility to release them by calling the close() method on that object.)
+
+
+=== good questions ===
+q1 -  Note that a BufferedInputStream can be wrapped twice, since high-level streams can take other high-level streams.
+q5
+q6
+q16
+
+q21
+The name variable and age variable are both transient, which means that their values will not be saved upon serialization. Upon deserialization, the default initializations and constructor will be skipped, 
+The static value will not be serialized; it will be available on the class after deserialization.
+
+q23	to check markSupported()

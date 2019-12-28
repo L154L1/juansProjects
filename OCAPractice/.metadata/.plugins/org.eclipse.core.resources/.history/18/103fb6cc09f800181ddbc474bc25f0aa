@@ -1,0 +1,56 @@
+package quickTry2;
+
+import java.util.*;
+class A{
+	A(){}
+	static int i;
+	public void test(){
+		System.out.println("A");
+	}
+}
+class B extends A{
+	public void test(){
+		System.out.println("B");
+		super.test();
+		System.out.println(super.i);
+	}
+	
+	public static void test2(){
+		//super.test();
+	}
+}
+public class C extends A{
+
+	public static void main(String[] args){		
+		int arr[] = {1,2,3};
+		for(int i : arr);
+		
+		for(int var : arr){
+			int i = 1;
+			while(i<=var);
+				System.out.println(i++);			
+		}
+		
+		Double a = new Double(1);
+		a++;
+		
+
+		
+	}
+	
+	static void didit() throws ClassNotFoundException{
+		throw new SecurityException();
+	}
+
+}
+
+
+interface I{
+	void meth1();
+}
+abstract class D implements I{}
+
+class E extends D{
+	public void meth1(){}
+}
+

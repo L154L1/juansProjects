@@ -1,0 +1,109 @@
+Chapter 4 - Methods and Encapsulation
+
+final or static are illegal specifiers for constructor.
+
+Within a class, instance method can call another instance or static method directly; static method cannot call instance method or access instance fields directly.
+
+class (static) method cannot use keyword "this" or "super". 
+
+super is a keyword used to reference a member of the parent class. (can be a static member like accessing static members via a reference to an object.)
+
+(p167) Java default access is package private meaning the method can be called from classes in the same package. There is no keyword for default access. You simply omit the access modifier. 
+There is default keyword in Java - in switch statement, and default methods in interfaces.
+
+Java protected access is 'package access + subclasses' meaning the method can be called from classes in the same package or subclasses.
+
+(p168) You can have zero or more optional specifiers in a method declaration although not all combinations are legal.
+static	used for class methods
+abstract	used when not providing a method body
+final	used when a method is not allowed to be overridden by a subclass
+synchronized	not in OCA
+native		not in OCA or OCP
+strictfp	not in OCA or OCP
+
+final public void walk7() {} 	does compile. Java allows the optional specifiers to appear before the access modifier.
+
+(p171) Optional exception list - You can list as many types of exceptions as you want when declaring a method.
+
+(p172) vararg parameter - variable argument. A method may use a vararg parameter as if it is an array. But it is a bit different than an array. It must be the last element in a method's parameter list which implies you are only allowed to have one vararg parameter per method.
+public void walk1(int start, int... nums) {}
+
+When calling a method with vararg parameter, you can pass an array or you can list the elements and let java create array for you. You can even omit the vararg values and java will create an array of length zero for you.
+
+It is possible to pass null as vararg value because array is reference type.
+
+(p179) protected access examples -
+Within a subclass, a protected member from superclass is used without referring to a variable - take advantage of inheritance and protected access is allowed.
+Within a subclass, a protected member from superclass is used through a variable - in this case, the reference type of the variable matters. If it is the same class or subclass, protected access is allowed.
+
+(p182) calling static variable or method -
+Usual practice is through class name. within the same class, it's not necessary to use class name. 
+Also you can use an instance of object to access static members. Java only reads the static variable and doesn't call the value of the object, even it's null.
+
+(p184)Table 4.3 Static vs Instance calls)
+Static member cannot call an instance member without instantiating the object.
+Instance method can call a static member, using classname or a reference variable.
+Only an instance method can call another instance method on the same class without using a reference variable. 
+
+(p186) static initializers
+The static initializer runs when the class is first used.
+(Note : in real coding, you should avoid using static or instance initializers. Because they can make you code hard to read. Everything that could be done in an instance initializer could be done in a constructor instead. )
+Static initializer can only access static variables. Instance initializer can access both instance and static variables.
+
+(q13, q24) 
+Final static variables can only be set once : in the variable declaration or in a static initializer.
+Final instance variables can only be set once : in the variable declaration, an instance initializer, or a constructor.
+
+(p187) static imports
+Static imports are for importing static members of classes. The purpose of static import is you don't have to specify which class each static method or variable comes from when calling them. You cannot static import two static methods or variables with the same name even they are from different classes.
+
+(p191) Java is a pass-by-value language among methods. Assigning a new primitive or reference to a parameter doesn't change the caller. Calling methods on a reference to an object does affect the caller.
+
+(p191) methods overloading
+Methods overloading occurs when methods have the same name but different parameters list. 	(method signature - name and parameter list)
+Everything other than the method name can vary for overloading methods. This means there can be different access modifiers, specifiers (like static), return types, and exception lists.
+Among overloading methods, Java calls the most specific method it can. Exact matches are preferred, followed by wider primitives. After that comes autoboxing and finally varargs.
+
+(p197)
+Every class has a constructor whether you code one or not. If you don't include any constructors in the class, Java creates a default no-args constructor.
+The default constructor only contains the super() call and its access level is the same as the class - package or public for top level class.
+
+Having a private constructor in a class tells the compiler not to provide a default no-args constructor. It also prevents other classes from instantiating the class. This is useful when a class only has static methods or the class wants to control all calls to create new instance of itself.
+
+(p200) overloading constructors - when a class has multiple constructors
+'this' keyword can be used when overloading constructors to call another constructor on the same instance of class. But this() call must be the first statement in the constructor.
+Overloaded constructors often call each other. One common technique is to have each constructor add one parameter until getting to the constructor that does all the work. This approach is called constructor chaining.
+
+(q18) 
+this.variableName can be called from any instance method to refer to an instance variable. "this" is not legal to be used in static methods.
+this() can only be called from a constructor in the same class as the first line of the constructor.
+
+(202) order of initialization
+1. If there is a superclass, initialize it first.
+2. Static variable declaration and static initializers in the order they appear.
+3. Instance variable declaration and instance initializers in the order they appear.
+4. The constructor.
+
+Rule 2 runs without new keyword. Rule 3 and 4 only run with new keyword which is instantiation process. All initialization rules only run when there is main() method. Rule 2 run before main(). 
+
+(p205) Encapsulation
+Encapsulation means we set up the class so only methods in the class with the variables can refer to the instance variables. Callers are required to use these methods.
+
+For encapsulation, we make data (instance variables) private and getters/setters (methods) public. (JavaBeans call an instance variable a property.) JavaBeans naming convention for getters and setters - set/get/is
+
+(p207) If we omit setter in encapsulated class, it becomes immutable. But we still want the caller to be able to specify the initial value - we just don't want it to change after the object is created - use constructor.
+
+- Encapsulation refers to preventing callers from changing instance variables directly.
+- Immutability refers to preventing callers from changing instance variables at all.
+
+(p208)
+A lambda expression is a block of code that gets passed around. - anonymous function
+The -> operator seperates the parameter(s) and body. The parentheses are only optional when there is only one parameter and its type is not explicitly declared.
+We can omit braces for the body when there is only one statement.
+
+Lambdas work with interfaces that have only one method known as functional interfaces - interfaces that can be used with functional programming (lambda expressions) . They are in the package java.util.function, such as :
+public interface Predicate<T> {
+	boolean Test(T t);
+}	
+
+

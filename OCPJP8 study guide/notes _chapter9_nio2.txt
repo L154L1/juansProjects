@@ -1,0 +1,94 @@
+Chapter 9 - NIO.2
+
+p455 A Path object represents a hierachical path on the storage system to a file or directory. In this manner, Path is a direct replacement for the legacy java.io.File class.
+
+Unlike the File class, the Path interface contains support for symbolic links. A symbolic link is a special file within an operating system that serves as a reference of pointer to another file or directory.
+
+Unlike the java.io.File class, Path is an interface. The reason is that creating a file or directory is considered a file system-dependent task in NIO.2. When you obtain a Path object from the default file system in NIO.2, the JVM gives you back an object that unlike java.io.File transparently handles system-specific details for the current platform
+
+p456  The simplest and most straightforward way to obtain a Path object is using java.nio.files.Paths factory class. To obtain a reference to a file or directory, you would call the static method Paths.get(String) method.
+
+p457 absolute vs relative is file system dependent
+- If a path starts with a forward slash, it is an absolute path (Linux or Mac-based system)
+- If a path starts with a driver letter, it is an absolute path (Windows based system)
+- Otherwise, it is a relative path.
+
+Paths.get(String, String...) allows you to create a Path from a list of String values in which the operating system dependent path.separator is automatically inserted between elements.
+
+p458 Path vs Paths
+Java is fond of using one name for the data class and the plural form of that name for the factory of helper class. ( A factory class can be implemented using static methods to create instance of another class.)
+Below two examples will not compile -
+Paths path1 = Paths.get("/alligator/swim.txt");
+Path path2 = Path.get("/crocodile/food.csv");
+
+p458 Another way to construct a Path using Paths class is with a URI value - java.net.URI. Paths.get(URI) method can be used to obtain a reference to a URI-based resource.
+Path path = Paths.get(new URI("file:///pandas/cuddly.png"));
+Path path2 = Paths.get(new URI("http://www.wiley.com"));
+
+p459 access the underlying FileSystem object
+Paths.get() method is the same for the class java.nio.file.FileSystem method getPath().
+Path path1 = FileSystems.getDefault().getPath("/alligator/swim.txt");
+FileSystem getPath also gives us ability to connect to a remote file system, as shown :
+FileSystem fileSystem = FileSystems.getFileSystem(new URI("http://www.selikoff.net"));
+Path path = fileSystem.getPath("duck.txt");
+This code is useful when we need to construct Path objects frequently for a remote file system.
+
+p460 java.nio.Path and legacy java.io.File can convert to each other
+File file = new File("panda/cuddly.png");
+Path path = file.toPath();
+
+Path path = Paths.get("cuddly.png");
+File file = path.toFile();
+
+p467 use path symbols
+. references the current directory
+.. references the parent of the current directory
+
+p471 interact with Files
+Unlike the methods in the Path and Paths class, most of the options with Files class will throw an exception if the file to which the Path refers does not exist.
+
+NIO.2 Files helper class is in no way related to the File class, as Files class operates on Path instance, not File instance. File belongs to the legacy java.io.API, while Files belongs to the NIO.2 API.
+
+p476 Files.newBufferedReader() / Files.newBufferedWriter()
+They require a Charset value to determine what character encoding to use to read or write the file.
+Charset.defaultCharset() can be used to get the default Charset for the JVM.
+
+P480 In Linux or Mac-based systems, hidden file is often denoted by file or directory entries that begin with a period(.) character., while in Windows-based systems, this requires the hidden attribute to be set.
+
+p483 A view is a group of related attributes for a particular file system type. If you need to read multiple attributes of a file or directory at a time, the performance of using a view maybe substantial, because there are fewer round trips between Java and the operating system.
+
+p484 Table 9.4 The attributes and view classes
+Attributes Class		View Class					Description
+BasicFileAttributes		BasicFileAttributeView		Basic set of attributes supported by all file systems
+DosFileAttributess		DosFileAttributeView		Attributes supported by DOS/Windows-based systems
+PosixFileAttributes		PosixFileAttributeView		Attributes supported by POSIX systems, such as Unix, Linux, Mac and so on
+
+p490 avoid circular paths when using Files.walk() method
+The walk() method will not traverse symbolic links by default to avoid circular paths. NIO.2 offers the FOLLOW_LINKS option as a vararg to the walk() method. It is recommended to specify an appropriate depth limit when this option is used. Also be aware that when this option is used, the walk() method will track the paths it has visited, throwing a FileSystemLoopException if a cycle is detected.
+
+p492 Earlier we said Files.readAllLines() could run into OutOfMemoryError problem when the file is very large. NIO.2 API now includes a Files.lines(Path) method that returns a Stream<String> object and does not suffer from this same issue. The contents of the file are read and processed lazily, which means that only a small portion of the file is stored in memory at any given time.
+
+p493 Files.readAllLines() vs Files.lines()
+Files.readAllLines() - returns a List<String> object
+Files.lines() - returns a Stream<String> object
+Note : forEach() can be called on both Stream and Collection objects.
+
+p494 Table 9.5 Comparison of java.io.File and NIO.2 methods
+
+
+=== good questions ===
+q2
+q4
+q5
+q6
+
+q8
+Two things to remember for resolve() -
+- The resolve() method does not normalize any path symbols.
+- Calling resolve() with an absolute path as a parameter returns the absolute path.
+
+q10 A should be correct
+q15
+q16
+q17
+q20

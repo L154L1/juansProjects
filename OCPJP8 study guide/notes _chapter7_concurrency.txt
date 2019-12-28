@@ -1,0 +1,331 @@
+Chapter 7 - Concurrency
+
+p392 Summary
+This chapter introduced you to threads and showed you how to process tasks in parallel using the Concurrency API. You should know how to create threads indirectly using an ExecutorService and a fork/join recursive framework. The work/task that a thread performs can be defined in an instance of Runnable or Callable. As of Java 8, these tasks can now be expressed as lambda expressions.
+
+p327 
+A thread is the smallest unit of execution that can be scheduled by the operating system. 
+A process is a group of associated threads that execute in the same shared environment. 
+A single-threaded process is one that contains exactly one thread. 
+A multi-threaded process is one that contains one or more threads.
+A task is a single unit of work performed by a thread. A task will commonly be implemented as a lambda expression. A thread can complete multiple tasks but only one task at a time.
+
+p328 All Java applications are multi-threaded. System threads such as garbage collection thread are running in the background of the application. But we are often only interested in user-defined threads. main() method is a thread. We commonly refer to threads that contain only one user-defined thread as a single threaded application.
+
+Operating system uses thread scheduler to determine which threads should be currently executing.
+
+When a thread's allotted time is complete but the thread has not finished processing, a context switch occurs. A context switch is the process of storing a thread's current state and later restoring the state of the thread to continue execution. There is often a cost associated with a context switch.
+
+A thread can interrupt or supersede another thread if it has higher priority. A thread priority is a integer value associated with a thread.
+
+The Thread class includes three important static constants - Thread.MIN_PRIORITY = 1, Thread.NORM_PRIORITY = 5, Thread.MAX_PRIORITY = 10
+
+By default, user-defined threads receive a thread priority value of Thread.NORM_PRIORITY. If you want it to be executed right away, you can increase this value to 6 or higher, or use Thread.MAX_PRIORITY. If two threads have the same priority, the thread scheduler will arbitrarily choose on to process first.
+
+330 Runnable interface
+@FunctionalInterface public interface Runnable{
+	void run();
+}
+
+Runnable interface is commonly used to define the work a thread will execute.
+
+p331 Executing a task with thread is two-step process. First you define the Thread with the corresponding task to be done. Then you start the task by calling Thread.start().It maybe executed immediately or delay. Java does not provide guarantee in which a thread will be processed once it is started.
+
+Two ways to create a thread :  the first is preferred way.
+- Provide a runnable object or lambda expression to the Thread constructor.
+- create a class that extends Thread and overrides its run() method.
+
+p335 create threads with ExecutorService
+With Concurrency API, Java introduced the ExecutorService, which creates and manages threads for you. You first obtain an instance of ExecutorService interface, then you send the tasks to be processed. The framework also includes many useful features such as thread pooling and scheduling. It is recommended that you use this framework anytime you need to create and execute a separate task, even you only need a single thread.
+
+ExecutorService service = Executors.newSingleThreadExecutor();
+
+p337 It is important that you call shutdown() method once you finish using a thread executor otherwise your application will never terminate.
+p337 shutdown() vs. shutdownNow()
+ExecutorService life cycle -
+isShutdown()
+isTerminated()
+
+P338 Table 7.2 ExecutorService methods
+execute() vs. submit()
+execute() - It takes a Runnable lambda expression or instance and complete the task asynchronously. Its return type is void.
+submit() - It can take Runnable or Callable as argument. It returns a Future object that can be used to determine if the task is complete or return a generic result object after the task has been completed.
+
+In real world, we prefer using submit() over execute().
+
+p339 submit task collections
+ExecutorService interface also has invokeAll() and invokeAny() method for submitting a collection of tasks. Both execute synchronously which means they wait till the results are available before returning control to the enclosing program.
+invokeAll() executes all tasks in a provided collection and return a list of ordered Future objects, in the order they were in the original collection. Even Future.isDone() returns true for each element in the returned list, a task could be completed normally or thrown an exception.
+invokeAny() executes a collection of tasks and return the result of one of the tasks that successfully completes execution, cancelling all unfinished tasks.
+
+invokeAll() will wait indefinitely until all tasks are complete, while invokeAny() will wait indefinitely until at least one task completes. They both have overloaded versions that can take a timeout value and TimeUnit parameter to give the wait a timeout. 
+
+p340 Future methods
+boolean isDone()
+boolean isCancelled()
+boolean cancel()
+V get()
+V get(long timeout, TimeUnit unit)
+
+Note :  
+- The output of submit(Runnable) task is a Future<?> object which will only return null on its get() method.
+- The output of submit(Callable) task is a Future<T> object which will return T on its get() method.
+
+p342 Callable interface
+@FunctionalInterface public interface Callable<V>{
+	V call() throws Exception;
+}
+
+( compared to : )
+p330 Runnable interface
+@FunctionalInterface public interface Runnable{
+	void run();
+}
+
+Note : Runnable doesn’t use generics. But Callable does.
+
+p345 schedule tasks
+ScheduledExecutorService is child class of ExecutorService
+ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
+p346 ScheduledExecutorService methods : They all return ScheduledFuture<V> which is identical to Future<V>, except it includes a getDelay() method.
+schedule(Callable<V>, delay, TimeUnit)
+schedule(Runnable, delay, TimeUnit)
+scheduleAtFixedRate(Runnable, initialDelay, period, TimeUnit) // the new task will be created regardless of whether or not the previous task finished.
+scheduleAtFixedDelay(Runnable, initialDelay, period, TimeUnit)	// creates new task in a period of time after the previous task has finished.
+
+Note : scheduleAtFixedRate() and scheduleAtFixedDelay() only support Runnable, not Callable.
+
+note : scheduleAtFixedRate() is the closest built-in java equivalent to creating Cron jobs in Linux to schedule tasks.
+
+p348 increase concurrency with pools
+A thread pool is a group of pre-instantiated reusable threads that are available to perform a set of arbitrary tasks.
+ExecutorService service = Executors.newCachedThreadPool();
+ExecutorService service = Executors.newFixedThreadPool(5);
+ScheduledExecutorService service = Executors.newScheduledThreadPool(5);
+
+The difference between single-thread and a pooled-thread executor is what happens when a task is already running. While a single-thread executor will wait for an thread to become available before running the next task, a pooled-thread executor can execute the next task concurrently. If the pool runs out of availabe threads, the tasks will be queued by the thread executor and wait to be completed.
+
+newCachedThreadPool() creates a thread pool of unbounded size. It's commonly used for pools that require executing many short-lived asynchronous tasks. For long-lived processes, usage of this executor is strongly discouraged, as it could grow to a large number of threads over the application life cycle.
+
+newFixedThreadPool(int) takes a number of threads. As long as our number of tasks is less than number of threads, all tasks will be executed concurrently. If at any point the number of tasks exceeds the number of threads in the pool, they will wait in similar manner as you saw with single-thread executor. In fact, calling newFixedThreadPool(1) is equivalent to calling newSingleThreadExecutor().
+
+note : in real world, it is a common practice to allocate thread pools on the number of CPUs, as well as how CPU intensive the task is. For example, if you are performing very CPU-intensive tasks, then creating a 16-thread pool in a 2-CPU computer will cause the computer to perform quite slowly. If your tasks involve reading/writing data from disk or a network, a 16-thread pool may be appropriate, since most of the waiting involves external resources. Fortunately, most tasks are dependent on some other resources, such as a database, file system, or network. In those situations, creating large thread pools is generally safe, as the tasks are not CPU intensive and may involve a lot of waiting for external resources to become available.
+
+p350 synchronize data access
+Now that we have multiple threads capable of accessing the same objects in memory, we have to make sure to organize our access to this data such that we don't end up with invalid or unexpected results.
+The unexpected result of two tasks executing at the same time is referred to as race condition.
+
+p352 Atomic - is the property of an operation to be carried out as a single unit of execution without any interference by another thread.
+atomic classes - Table 7.7
+AtomicBoolean
+AtomicInteger
+AtomicIntegerArray
+AtomicLong
+AtomicLongArray
+AtomicReference
+AtomicReferenceArray
+
+common atomic methods - Table 7.8
+get()
+set()
+getAndSet()
+incrementAndGet()	// for numeric classes, pre-increment, equivalent to ++value
+getAndIncrement()	// for numeric classes, post-increment, equivalent to value++
+decrementAndGet()	// for numeric classes, pre-decrement, equivalent to --value
+getAndDecrement()	// for numeric classes, post-decrement, equivalent to value--
+
+p354 use synchronized block - We can use the synchronized keyword on any method or code block.
+Atomic classes only address increment/decrement issue to shared data. The most common technique is to use a monitor, also called lock to synchronize access. 
+A monitor/lock is a structure that supports mutual exclusion or the property that at most one thread is executing a particular segment of code at a given time. Any object can be used as a monitor, along with the synchronized keyword.
+
+synchronized(object){
+	// work to be execute by one thread at a time
+}
+
+p356 synchronize methods
+- synchronized modifier can be added to any instance method to synchronize automatically on the object itself. Below two are equivalent :
+
+private void incrementAndReport() {
+	synchronized(this) {
+		System.out.print(++sheepCount + " ");
+	}		
+}
+
+private synchronized void incrementAndReport() {
+	System.out.print(++sheepCount + " ");
+		
+}
+
+- synchronized modifier can also be added to static methods. The object used as monitor is the class object. Below two are equivalent :
+
+private static void printDaysWork() {
+	synchronized(SheepManager.class) {
+		System.out.print(++sheepCount + " ");
+	}		
+}
+
+private static synchronized void printDaysWork() {
+	System.out.print(++sheepCount + " ");
+		
+}
+
+- (Bonus exam 1 Q37) synchronized modifier cannot be applied to variables, such as below :
+public class FoodStorage {
+private synchronized int apples;
+...
+}
+
+p357 synchronization is about protecting data integrity at the cost of performance.
+
+p358 use concurrent collections
+Since we can use the synchronized keyword on any method or block, we can do the same for our existing collection classes to make them thread safe. Because accessing collections from across multiple threads is so common that for convenience, Java thought it would be good idea to have alternate versions of of many regular collections classes just for multi-threaded access, such that you don't need to use the synchronized keyword on regular collection classes but just use concurrent collection classes.
+
+p360 concurrent classes
+You should use a concurrent collection class anytime that you are going to have multiple threads modify a collection object outside a synchronized block or method.
+
+It is considered a good practice to instantiate a concurrent collection but pass it around using a non-concurrent interface whenever possible.
+
+Table 7.9 concurrent collection classes
+Class Name				Java Collections Framework Interface		Elements Ordered?		Sorted?		Blocking?
+=================================================================================================================
+ConcurrentHashMap		ConcurrentMap								No						No			No
+ConcurrentLinkedDeque	Deque										Yes						No			No
+ConcurrentLinkedQueue	Queue										Yes						No			No
+ConcurrentSkipListMap	ConcurrentMap								Yes						Yes			No
+						SortedMap
+						NavigableMap
+ConcurrentSkipListSet	SortedSet									Yes						Yes			No
+						NavigableSet
+CopyOnWriteArrayList	List										Yes						No			No
+CopyOnWriteArraySet		Set											No						No			No
+LinkedBlockingDeque		BlockingQueue								Yes						No			Yes
+						BlockingDeqeue
+LinkedBlockingQueue		BlockingQueue								Yes						No			Yes		
+
+
+BlockingQueue and BlockingDeque are just like a regular queue or deque, except that it includes methods that will wait a specific amount of time (timeout timer) for the object to be available to complete an operation.	
+
+ConcurrentSkipListSet and ConcurrentSkipListMap, are concurrent versions of their sorted counterparts, TreeSet and TreeMap, respectively. They maintain their elements or keys in natural ordering. When you see 'SkipList', just think "sorted" concurrent collections.
+
+CopyOnWrite collections - CopyOnWriteArrayList and CopyOnWriteArraySet, These classes copy all of their elements to a new underlying structure anytime a element is added, modified or removed from the collection. 'modified' means the reference in the collection is changed. Modifying the actual contents of the element will not cause a new structure to be allocated.
+This is particular useful in multi-threaded environment that needs to iterate the collection. Any iterator established prior to a modification will not see the changes, but instead it will iterate over the original elements prior to the modification.
+CopyOnWrite classes can use a lot of memory, since a new collection structure needs be allocated anytime the collection is modified. They are commonly used in multi-threaded environment situations where reads are far more than writes.	
+
+p365 - synchronized collections, obtaining synchronized version of existing non-concurrent collection by a wrapping method - Table 7.12
+synchronizedCollection(Collection<T>)
+synchronizedList(List<T>)
+synchronizedMap(Map<K,V>)
+synchronizedNavigableMap(NavigableMap<K,V>)
+synchronizedNavigableSet(NavigableSet<T>)
+synchronizedSet(Set<T>)
+synchronizedSortedMap(SortedMap(K,V))
+synchronizedSortedSet(SortedSet<T>)
+
+If you know at the time of creation that your object requires synchronization, than you should use one of the concurrent collection classes listed in Table 7.9. On the other hand, if you are given an existing collection that is not a concurrent class and needs to access it among multiple threads, you can wrap it using the wrapping method in Table 7.12
+These wrapping method synchronize access to the data elements, such as the get() and set() method. But they do not synchronize access on any iterators you may create from the synchronized collection. Therefore, you still must use a synchronized block if you need to iterate over any of the returned collection by a synchronized wrapping method.
+Unlike concurrent collections, synchronized collections throws a ConcurrencyModificationException if they are modified within an iterator by a thread, while the concurrent collection does not. 
+Other than iteration over the collection, the collections returned by synchronized wrapping method are safe to use among multiple threads.
+
+p366 parallel streams
+A parallel stream is a stream that is capable of processing results concurrently using multiple threads, vastly improving performance over processing an element at a time.
+
+isParallel() can be used to test if the instance of a stream supports parallel processing.
+Stream.concat(Stream s1, Stream s2) is parallel if either s1 or s2 is parallel.
+flatMap() creates a new stream that is not parallel by default, regradless of whether the underlying elements are parallel.
+
+p370 performance improvement using parallel stream
+Parallel streams tend to achieve the most improvement when the number of elements in the stream is significantly large. For small streams, the improvement is often limited, as there are some overhead costs to allocating and setting up the parallel processing.
+
+p370 Parallel streams can improve performance because they rely on the property that many stream operations can be executed independently. Independent operation means that the results of an operation on one element of a stream do not require or impact the results of another.
+
+p372 parallel reduction - reduction operations on parallel streams. The results for parallel reductions could be different from what you expect with serial streams.
+
+Any stream operation that is based on order, including findFirst(), limit(), or skip(), may actually perform more slowly in a parallel stream, because parallel processing task is forced to coordinate all of its threads in a synchronized fashion. On the plus side, the results of ordered operations on a parallel stream will be consistent with a serial stream.
+
+p377 manage concurrent processes
+Two classes : CyclicBarrier and ForkJoinPool
+
+p379 CyclicBarrier - takes a limit value in its constructor, indicating the number of threads to wait for. As each thread finishes, it calls await() method on the cyclic barrier. Once the specified number of threads have each called await(), the barrier is released and all threads can continue.
+
+p380 If you are using a thread pool, the number of available threads should be no less than your cyclic barrier limit value, otherwise the code will hang indefinitely because the barrier would never be reached as the only threads available in the pool are stuck waiting for the barrier to be complete. This is a form of deadlock.
+
+p381 reuse CyclicBarrier
+After a CyclicBarrier is broken, all threads are released and the number of threads waiting on the CyclicBarrier goes back to zero. At this point, the CyclicBarrier may be used again for a new set of waiting threads. For example, if our CyclicBarrier limit is 5 and we have 15 threads that call await(), then the CyclicBarrier will be activated a total of three times.
+
+p381 Fork/Join framework
+The fork/join framework relies on the concept of recursion to solve complex tasks.
+
+Recursion is the process by which a task calls itself to solve a problem. A recursive solution is constructed with a base case and a recursive case.
+Base case : a non-recursive method that is used to terminate the recursive path.
+Recursive case : a recursive method that may call itself one or multiple times to solve a problem.
+for example -
+public static int factorial(int n){
+	if(n<=1) return 1;
+	else return n*factorial(n-1);
+}
+
+In this example, 1 is the base case, and any integer value greater than 1 triggers the recursive case.
+
+One challenge in implementing a recursive solution is always to make sure that the recursive process arrives at a base case. Otherwise if the base case is never reached, the solution will continue indefinitely, resulting in a StackOverflowError anytime the application recurses too deeply.
+
+p382 Applying the fork/join framework requires us to perform three steps:
+1. Create a ForkJoinTask.
+2. Create the ForkJoinPool.
+3. Start the ForkJoinTask.
+
+There are two ways to define our ForkJoinTask. One is to extend RecursiveAction, the other is to extend RecursiveTask. The difference is starting a RecursiveAction doesn't return a result, while starting a RecursiveTask returns a result.
+
+p386 tips for Fork/Join class
+- The class should extend RecursiveAction or RecursiveTask. Both RecursiveAction or RecursiveTask are child of ForkJoinTask.
+- If the class extends RecursiveAction, then it should override a protected compute() method that takes no arguments and returns void.
+- If the class extends RecursiveTask, then it should override a protected compute() method that takes no arguments and returns a generic type listed in the class definition.
+- The invokeAll() method takes two instances of the fork/join class and does not return a result.
+- The fork() method causes a new task to be submitted to the pool and is similar to the thread executor submit() method.
+- The join() method is called after the fork() method and causes the current thread to wait for the result of a subtask.
+- The fork() method should be called before the current thread performs a compute() operation, with join() called to read the results afterward.
+- Since compute() takes no arguments, the constructor of the class is often used to pass data to the task.
+
+
+p387 A threading problem can occur in multi-threaded applications when two or more threads interact in an unexpected and undesirable way. For examplem two threads may block each other from accessing a particular segment of code.
+Although the Concurrency API reduces the potential for threading issues, it doesn't eliminate it. In practice, finding and identifying threading issues within an application is often one of the most difficult tasks a developer can undertake.
+
+p388 Liveness - is the ability of an application to be able to execute in a timely manner. Liveness problems are those in which the application become unresponsive or in some kind of "stuck" state.
+There are 3 types of liveness issues you should know for OCP exam : deadlock, starvation, and livelock.
+
+Deadlock - occurs when two or more threads are blocked forever, each waiting on the other.
+p390 One common strategy to avoid deadlocks is for all threads to order their resource requests.
+
+Starvation - occurs when a single thread is perpetually denied access to a shared resource or lock. The thread is still active but it is unable to complete its work as a result of other threads constantly taking the resource that it trying to access.
+
+Livelock - occurs when two or more threads are conceptually blocked forever. Although they are each still active and trying to complete their task. Livelock is a special case of starvation. Threads in a livelock state appear active and able to respond to requests, even when they are in fact stuck in an endless cycle.
+
+p391 Race Conditions
+A race condition is an undesirable result that occurs when two tasks, which should be completed sequentially, are completed at the same time. The worst outcome to a race condition could be unrecoverable data problems (invalid data such as two accounts have the same user name but different password. )
+
+p392 Race conditions lead to invalid data if they are not properly handled. Race conditions tend to appear in highly concurrent applications. One solution is to use a monitor to synchronize on the relevant overlapping task. We could also use singletons to coordinate access to shared resources.
+
+
+=== good questions ===
+q3
+- scheduleWithFixedDelay() does not exist in ExecutorService, instead in ScheduledExecutorService
+- scheduleWithFixedDelay() supports only Runnable, not Callable
+
+q4 
+q7
+q9
+q10
+q11
+q12
+
+q13		
+The stream created by flatMap() is a new stream that is not parallel by default, even though its elements are parallel streams. Therefore, the performance will be single-threaded and G is correct.
+
+q14
+
+q16	
+The thread executor is never shut down; therefore the code will run but it will never terminate, making H also correct.
+
+q17
+q21
+q22

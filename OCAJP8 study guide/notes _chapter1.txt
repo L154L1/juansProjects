@@ -1,0 +1,102 @@
+Chapter 1 - Java Building Blocks
+
+In Java programming, classes are the basic building blocks.
+To use most classes, you have to create objects. An object is a runtime instance of a class in memory.
+Java class has two primary elements : methods and fields(variables)
+
+You can put two classes in one Java file. But when you do so, at most one of the classes is allowed to be public. 
+If you have a public class, it needs to match the java file name, other wouldn't compile.
+
+Package - logical grouping for classes.
+
+Java classes are grouped into packages. The import statement tells the compiler which package to look in to find a class. Without using import statement, you need to type fully qualified class name in your code (<package name>.<class name>)
+
+
+Using wildcard in import statement can shorten the import list. It only import classes. It doesn't import child packages, fields or methods.
+(static import is different. It imports static members within a class)
+You can only use one wildcard in an import statement.
+
+java.lang is special package that it is automatically imported so you don't need to explicitly import it in your program.
+
+(p12)Naming conflicts
+One of the reasons for using packages is so that class names don't have to be unique across all of java. Different packages can have classes using the same names.
+When there is a conflict, compiler will tell.
+When there is a conflict, if you explicitly import a class name, it takes precedence over any wildcard present.
+You can also pick one to use in the import, the other one use fully qualified class name, or both use fully qualified name.
+
+(p14) compiling code with packages
+(p15) java run with class paths
+
+(P17) Constructor - a special method
+Two key points to note about the constructor : the name of the constructor must match the name of the class, and there's no return type.
+The purpose of constructor is to initialize fields, although you put any code in it.
+If you don't code a constructor, the compiler will supply a default constructor for you.
+Note : constructor cannot be final or static !!!
+
+(p18) The code between the curly braces is called a code block. Code blocks can appear outside a method. These are called initializers.
+
+(p20) Java has two types of data - primitive types and reference types
+
+(p21 table 1.1) 8 Java primitive types -boolean/byte/short/int/long/float/double/char
+A float requires the letter f following the decimal number, otherwise Java sees it as double.
+
+(p22) number system
+			prefix 
+octal		0
+hexadecimal	0x or 0X
+binary		0b or 0B
+
+(p24) A reference type refers to an object (an instance of a class)
+Unlike primitive types that hold their values in the memory where the variable is allocated, references do not hold the value of the object they refer to. Instead, a reference points to an object by storing the memory address where the object is located, a concept referred to as pointer.
+
+Reference types can be assigned null. Primitive types cannot.
+
+Primitive types have lowercase type names. All classes that come with Java begin with uppercase. You should follow the convention for classes you creat as well.
+
+(p27) Java rules for identifiers - apply to anything you are free to name including variables, methods, classes and fields (I think package name as well)
+- The name must begin with a letter or the symbol $ or _
+- Subsequent characters may also be numbers other than above. (Cannot be @ or *)
+- Cannot use Java reserved keywords. 
+
+(P28) Java reserved keywords
+Note : const and goto are not used in Java but Java reserves to avoid confusion from languages that use them and also for possible use in the future.
+
+(p29) default initialization of variables
+local variable - is a variable defined within a method (including method parameters). Local variables do not have a default value and contain garbage data until initialized. They must be initialized before use.
+
+instance and class variables - variables that are not local variables including instance and class variables. They do not require you to initialize them. As soon as you declare them, they are given a default value - null for an object and 0/false for a primitive.
+(Instance variables are also called fields. Class variables has the keyword static in declaration and are shared across all objects of the class.)
+
+(p34) variable scope
+- Local variables - in scope from declaration to end of block
+- Instance variables - in scope from declaration until object garbage collected
+- Class variables - in scope from declaration until program ends
+
+(p34) ordering elements in Java file (PIC - package, import and class)
+Element					Required	Where do it go?
+package declaration		No			First line in the file
+Import statements		No			Immediately after the package
+Class declaration		Yes			Immediately after the import
+Field declaration		No			Anywhere inside a class
+Method declaration 		No			Anywhere inside a class
+
+(p36) garbage collection
+System.gc() does garbage collection. When it gets called, garbage collection is not guaranteed to run, just means it's time to kick of garbage collection. Java is free to ignore the request.
+When a object is no longer reachable, it's eligible for garbage collection, of which when one of below two situations occurs :
+- the object no longer has any references pointing to it.
+- all references to the object have gone out of scope.
+
+(p38) finalize()
+Java allows objects to implement a method called finalize() which might get called when garbage collector tries to collect the object. It might not get called or be called only once, definitely won't be called twice.
+
+(p42 - q3) Primitive types do not allow methods to be called on them. 
+
+(p45 - q9) Array operator may appear after the variable name.
+
+(p46 - q14) The package name represents any folders underneath the current path.
+
+(p49 - q22) While Java does support some parts of functional programming, these occur within a class.
+
+(p50 - q23) javac compiles a .java file to a .class file. java takes the name of class as parameter when running java class file (no extension .class).
+
+

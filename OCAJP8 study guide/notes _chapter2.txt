@@ -1,0 +1,86 @@
+Chapter 2 Operators and Statements
+
+operators in Java : unary, binary, ternary operators - apply to one, two, three operands respectively.
+
+If two operators have the same level of precedence, Java guarantees left-to-right evaluation.
+
+(p55) numeric promotion rules
+1. If two values have different data types, Java will automatically promote one of the values to the larger of the two data types.
+2. If one of the values is integral and the other is floating-point, Java will automatically promote the integral value to the floating-point's data type.
+3. Smaller data types, namely byte, short, and char, are first promoted to int any time they are used with binary arithmetic operator.
+4. After all promotion has occurred, the operands have the same data type, the resulting value will have the same data type as promoted operands.
+
+(p58) 
+pre-increment/pre-decrement operator - the operator is applied first and the value return is the new value of the expression.
+post-increment/post-decrement oprator - the original value of the expression is returned, with operator applied after the value is returned.
+
+When using increment/decrement operator on a primitive, type will not change.
+
+(p60) Assignment operator with primitive data types - 
+From smaller data type to larger data type - automatic promote (upcast)
+From larger data type to smaller data type - needs to explicitly cast
+
+(p62)
+Compound operators are useful for more than just shorthand - they can also save us from having to explicitly cast a value.
+
+(p64) logical operators
+& AND
+| Inclusive OR
+^ Exclusive OR
+&& short-circuit AND
+|| short-circuit Inclusive OR
+
+(p66)
+For object comparison using equality operator (==), it is applied to the references to the objects, not the objects they point to. Two references are equal only if they point to the same object, or both point to null.
+
+(p71) conditional operator - ? :  (the only ternary operator, is actually a condensed if-then-else statement that returns a value.)
+boolean expression ? expression1 : expression2
+
+(p72) switch statement
+A single value is evaluated and flow is redirect to the first matching branch, known as case statement. If no match case statement is found, an optional default statement will be called. If no such default statement is available, the entire switch statement will be skipped.
+Note : 
+- the default block is only branched to if there is no matching case value for the switch statement, regardless of the position of default statement within the switch statement.
+- without the break statement in the end of a branch, flow will continue to the next proceeding case or default block automatically.
+
+(p73) data types supported by switch statement :  (note : long/Long are not included)
+byte and Byte
+short and Short
+char and Character
+int and Integer
+String
+enum values
+
+(p73) The values in each case statement must be compile-time constant values of the same data type as the switch value. This means you can only use literals, enum constants, or final constant variable of the same data type as switch value.
+
+
+(p79)
+A while loop might not be executed at all and a do-while loop will be executed at least once.
+
+(p81) for loop
+- varaibles declared in the initialization block of a for loop are only accessible within the for loop.
+- the variables declared in the initialization block must all be of the same type.
+- you don't have to declare variables in the initialization block by assigning values to the variables declared before for loop.
+
+The components of the for loop are each optional, which means below will compile :
+for(;;) { }  // a infinite loop
+
+
+(p83) for-each loop (enhanced for loop)
+Designed for iterating over arrays and collection objects
+
+(p87) add optional labels
+A label is an optional pointer to the head of a statement that allows the application flow to jump to it or break from it. It is a single word proceeded by a colon(:). Labels follow the same rule for identifiers. For readability, they are commonly expressed in uppercases, with underscore between words, to distinguish them from regular variables.
+Labels are allowed for any block statement (if/while/do while/for/switch)
+
+(p88) break statement in loops - 
+break optionalLabel;
+The break statement ends loop early.
+Without optional label, break statement will terminate the nearest inner loop it is currently in the process of executing. The optional label allows us to break out of a higher level outer loop.
+
+(p90) continue statement in loops -
+continue optionalLabel;
+It ends the current iteration of the loop and transfers control to the boolean expression to determine if the loop should continue.
+Without optional label, continue statement is applied to the nearest inner loop. Using optional label can transfer control to higher level outer loop.
+
+
+

@@ -1,0 +1,62 @@
+Chapter 2 - Design Patterns and Principles
+==========================================
+
+p52 functional interface - an interface that contains a single abstract method. Functional interfaces are used as the basis for lamda expressions in functional programming, since lambda expression is used in place of an instance/object of functional interface.
+A lamda expression is a block of code that gets passed around, like anonymous method.
+It's a good practice to mark a functional interface with annotation @FunctionalInterface
+
+p59 Java doesn't allow us to re-declare a local variable, the following lambda doesn't compile -
+(a, b) -> { int a = 0; return 5; }
+
+p60 Java defined functional interfaces for common problems in package java.util.function
+
+p63 Object vs Reference
+In Java, all objects are accessed by reference. You should consider the object as an entity that exists in memory. You don't have direct access to the memory of the object itself.
+1. The type of the object determines which properties exist within the object in memory.
+2. The type of the reference to the object determines which method and variables are accessible to the Java program.
+
+p64 casting object references
+1. casting a object from a subclass to a superclass doesn't require a explicit cast.
+2. casting a object from a superclass to a subclass requires an explicit cast.
+3. compiler will not allow casts to unrelated types.
+4. even when the code compiles without issue, an exception may be thrown at runtime if the object being cast is not an instance of that class. To avoid cast exception, we can use instanceof operator to test before cast.
+
+p66 In software development, a data model is the representation of our objects and their properties within our application and how they relate to items in the real world.
+
+p66 One fundamental principle of object-oriented design is the concept of encapsulating data. In Java, it is commonly implemented with private instance members that have public methods to retrieve or modify the data, referred to as getters and setters respectively.
+
+p69 There is a standard for creating classes that store data implementing encapsulation, called JavaBeans. It has its naming conventions.
+
+p71 is-a relationship is also known as the inheritance test - relationship between parent and child class.
+
+p73 has-a relationship is also known as the object composition test - an object contains a particular property or value.
+
+p75 design pattern - an established general solution to a commonly occurring software development problem. In this chapter, we focus on creational patterns, a type of software design pattern that manages creation of objects within an application.
+
+p76 singleton pattern - create an object in memory only once in an application and have it shared by multiple classes. The globally available object created by the singleton pattern is referred to as a singleton.
+- All constructors in a singleton class are marked private which ensures no other class is capable of instantiating another version of the class.
+- Requires a public static method to retrieve the instance of the singleton such as named getInstance()
+- By marking the constructors private, we have implicitly marked the class final - singleton class is effectively final.
+
+Singletons are used in situations where we need access to a single set of data throughout an application. For example, application configuration data and reusable data cache are commonly implemented using singleton.
+
+p82 immutable objects - create read-only objects. Go hand to hand with encapsulation except no setter methods exist that modify the object. Common strategy include :
+1. use a constructor to set all properties of the object.
+2. mark all instance variables private and final. (final instance variables can be set using constructor. )
+3. don't define any setter methods.
+4. don't allow referenced mutable objects to be modified or accessed directly.
+5. prevent methods from being overridden. (make the class final)
+
+p89 builder pattern - is a creational pattern in which parameters are passed to a builder object, often through method chaining, and an object is generated with a final build call. It's a solution to creation of object with large amount of properties.
+Builder class and its target class are tightly coupled. In practice, a builder class is often packaged alongside its target class, either as a static inner class within the target class or within the same java package. One advantage is that writer of the target class can then choose to make the constructor a private or default package, forcing the user to rely on the builder object to obtain the instance of the target class.
+
+p89 factory pattern - is a creational pattern based on the idea of using a factory class to produce instances of objects based on a set of input parameters. (Use static method to create instances of target class)
+It's used in creating objects in which the precise type of the object may not be known till runtime. It's focused on supporting class polymorphism. 
+The method to produce instance in the factory class is marked static.
+
+
+=== good questions ===
+q7
+q9
+910
+
